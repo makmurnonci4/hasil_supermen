@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Generator Laporan Supervisi Pembelajaran Mendalam</title>
+<style>
+:root{--bg:#f4f6fa;--surface:#ffffff;--surface2:#eef2f8;--border:#d5dbe6;--text:#1b2233;--muted:#5d6779;--accent:#1f4e9e;--accent-h:#173b7a;--accent-t:#ffffff;--ok:#1a7f4b;--okbg:#e3f4ea;--warn:#8a5a00;--warnbg:#fff3d6;--warnbd:#f0c766;--err:#a32222;--errbg:#fde8e8;}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#11151d;--surface:#1a202c;--surface2:#232b3a;--border:#333d50;--text:#e8ecf4;--muted:#9aa5b8;--accent:#6ea0f5;--accent-h:#8fb6f8;--accent-t:#0e1626;--ok:#58c98d;--okbg:#17332a;--warn:#f0c766;--warnbg:#3a2f12;--warnbd:#6b5518;--err:#ff9b9b;--errbg:#3b1d1d;}}
+:root[data-theme="dark"]{--bg:#11151d;--surface:#1a202c;--surface2:#232b3a;--border:#333d50;--text:#e8ecf4;--muted:#9aa5b8;--accent:#6ea0f5;--accent-h:#8fb6f8;--accent-t:#0e1626;--ok:#58c98d;--okbg:#17332a;--warn:#f0c766;--warnbg:#3a2f12;--warnbd:#6b5518;--err:#ff9b9b;--errbg:#3b1d1d;}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;line-height:1.5;font-size:15px}
+.wrap{max-width:1360px;margin:0 auto;padding:0 20px}
+header.top{padding:28px 0 8px}
+h1{margin:0 0 4px;font-size:1.6rem;line-height:1.25}
+.lead{margin:0;color:var(--muted);max-width:760px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px}
+.grid-intake{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-top:16px}
+@media(max-width:900px){.grid-intake{grid-template-columns:1fr}}
+.drop{display:block;border:2px dashed var(--border);border-radius:12px;padding:26px 16px;text-align:center;cursor:pointer;transition:.15s;background:var(--surface2)}
+.drop:hover,.drop.over{border-color:var(--accent);background:var(--surface)}
+.drop strong{display:block;font-size:1.05rem;margin-bottom:2px}
+.drop small{color:var(--muted)}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+button{font:inherit;cursor:pointer;border-radius:9px;padding:8px 14px;border:1px solid var(--border);background:var(--surface);color:var(--text)}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);color:var(--accent-t);border-color:var(--accent);font-weight:600}
+button.primary:hover{background:var(--accent-h)}
+button:disabled{opacity:.5;cursor:not-allowed}
+button.link{border:none;background:none;color:var(--accent);padding:2px 4px;text-decoration:underline}
+.steps{margin:0;padding-left:20px;color:var(--text)}
+.steps li{margin:6px 0}
+.steps b{font-weight:600}
+h2{font-size:1.02rem;margin:0 0 8px}
+h3.sec{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:16px 0 6px}
+textarea,input[type=text]{width:100%;font:inherit;padding:7px 9px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text)}
+textarea{resize:vertical;min-height:70px}
+input.need,textarea.need{border-color:var(--warnbd);background:var(--warnbg)}
+label.f{display:block;font-size:.85rem;color:var(--muted);margin:8px 0 3px}
+.msg{margin-top:10px;padding:9px 12px;border-radius:9px;font-size:.9rem}
+.msg.err{background:var(--errbg);color:var(--err)}
+.msg.warn{background:var(--warnbg);color:var(--warn)}
+.msg.ok{background:var(--okbg);color:var(--ok)}
+.note{font-size:.82rem;color:var(--muted);margin-top:10px}
+#work{margin-top:18px;display:none}
+.layout{display:grid;grid-template-columns:380px minmax(0,1fr);gap:16px;align-items:start}
+@media(max-width:1000px){.layout{grid-template-columns:1fr}}
+.side{display:flex;flex-direction:column;gap:14px}
+.rlist{display:flex;flex-direction:column;gap:6px}
+.ritem{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--border);border-radius:10px;cursor:pointer;background:var(--surface)}
+.ritem.act{border-color:var(--accent);background:var(--surface2)}
+.ritem .nm{flex:1;min-width:0}
+.ritem .nm b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600;font-size:.92rem}
+.ritem .nm span{display:block;font-size:.78rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip{font-size:.75rem;padding:2px 8px;border-radius:999px;background:var(--okbg);color:var(--ok);white-space:nowrap;font-weight:600}
+.chip.mid{background:var(--warnbg);color:var(--warn)}
+.chip.low{background:var(--errbg);color:var(--err)}
+.x{border:none;background:none;color:var(--muted);padding:2px 6px;font-size:1.1rem;line-height:1}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.chk{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:.92rem}
+.chk input{width:auto}
+.auto{font-size:.78rem;color:var(--warn);margin-top:3px}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:10px}
+.kpi{display:flex;gap:14px;align-items:baseline;flex-wrap:wrap}
+.kpi b{font-size:1.5rem}
+.pv{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:16px;overflow:auto}
+.paper{background:#fff;color:#111;font-family:"Times New Roman",Times,serif;font-size:14.5px;line-height:1.55;padding:40px 46px;max-width:820px;margin:0 auto;box-shadow:0 2px 14px rgba(0,0,0,.18);border-radius:2px}
+.paper .r-title{text-align:center;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:12px}
+.paper .r-t1{font-weight:700;font-size:1.12em}.paper .r-t2{font-weight:700}
+.paper .r-sub{margin-top:2px}
+.paper .r-h{font-size:1em;margin:20px 0 6px;font-weight:700}
+.paper .r-s{font-size:1em;margin:12px 0 4px;font-weight:700}
+.paper .r-p{margin:0 0 8px;text-align:justify}
+.paper .r-ol{margin:0 0 8px}
+.paper .li{display:flex;gap:6px;margin:0 0 3px;text-align:justify}
+.paper .r-ol .li{padding-left:22px}
+.paper .li .n{flex:0 0 22px}
+.paper .r-ol .li .n{margin-left:-22px}
+.paper .li.off{color:#777;font-style:italic}
+.paper .r-kv td{padding:1px 8px 1px 0;vertical-align:top}
+.paper .r-gap{height:8px}
+.paper .r-tw{overflow-x:auto;margin:4px 0 6px}
+.paper table.r-tb{border-collapse:collapse;width:100%;font-size:.93em;table-layout:fixed}
+.paper .r-tb th,.paper .r-tb td{border:1px solid #000;padding:4px 7px;vertical-align:middle;word-wrap:break-word}
+.paper .r-tb th{background:#D9E2F3;text-align:center}
+.paper .r-tb td .li{padding-left:0}
+.paper .r-sig{display:flex;justify-content:space-around;text-align:center;margin-top:10px;page-break-inside:avoid}
+.paper .r-sig .c{flex:1}
+.paper .r-sig.single{margin-top:22px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:.9rem;z-index:50;opacity:0;pointer-events:none;transition:.2s;max-width:90vw}
+.toast.show{opacity:1}
+.recap{width:100%;border-collapse:collapse;font-size:.85rem;margin-top:6px}
+.recap th,.recap td{border-bottom:1px solid var(--border);padding:5px 4px;text-align:left}
+.recap td.n,.recap th.n{text-align:right}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <h1>Generator Laporan Supervisi Pembelajaran Mendalam</h1>
+  <p class="lead">Unggah hasil instrumen supervisi (Excel atau CSV), laporan resmi langsung jadi. Periksa, lengkapi identitas bila perlu, lalu unduh sebagai Word. Bisa untuk banyak guru sekaligus.</p>
+</div></header>
+
+<main class="wrap">
+  <section class="grid-intake">
+    <div class="card">
+      <h2>1. Unggah hasil supervisi</h2>
+      <label class="drop" id="drop" for="file">
+        <strong>Klik atau seret berkas ke sini</strong>
+        <small>.xlsx, .xls, .csv · boleh banyak berkas sekaligus (satu berkas per guru, atau satu sheet per guru)</small>
+        <input type="file" id="file" multiple accept=".xlsx,.xls,.csv,.tsv,.txt" hidden>
+      </label>
+      <div class="btnrow">
+        <button id="btnPaste">Tempel data dari Excel/Sheets</button>
+        <button id="btnSample">Coba dengan contoh</button>
+        <button id="btnTemplate">Unduh template Excel</button>
+      </div>
+      <div id="pasteBox" hidden style="margin-top:10px">
+        <textarea id="pasteTa" rows="6" placeholder="Salin seluruh tabel instrumen dari Excel/Google Sheets, lalu tempel di sini"></textarea>
+        <div class="btnrow"><button class="primary" id="btnPasteGo">Buat laporan</button></div>
+      </div>
+      <div id="msgs" aria-live="polite"></div>
+      <p class="note">Semua diproses di browser Anda. Berkas tidak dikirim ke server mana pun.</p>
+    </div>
+    <div class="card">
+      <h2>Cara pakai</h2>
+      <ol class="steps">
+        <li><b>Isi instrumen</b> di Excel: tandai indikator bukti dengan <b>1</b> (teramati) atau <b>0</b> (tidak). Skor dan kategori terhitung otomatis. Belum punya berkasnya? Unduh template.</li>
+        <li><b>Unggah</b> berkas hasilnya. Identitas, skor, bukti, dan refleksi dibaca otomatis.</li>
+        <li><b>Periksa</b> pratinjau, lengkapi kolom yang kosong (kuning), lalu <b>unduh Word</b>.</li>
+      </ol>
+      <p class="note">Nilai akhir = skor perolehan ÷ skor maksimal × 100. Kategori: 86–100 Sangat Baik, 71–85 Baik, 56–70 Cukup, di bawah 56 Perlu Pembinaan.</p>
+    </div>
+  </section>
+
+  <section id="work">
+    <div class="layout">
+      <div class="side">
+        <div class="card" id="listCard">
+          <h2>Daftar laporan <span id="cnt" style="color:var(--muted);font-weight:400"></span></h2>
+          <div class="rlist" id="rlist"></div>
+          <div id="recapBox"></div>
+        </div>
+        <div class="card" id="formCard"></div>
+      </div>
+      <div>
+        <div class="toolbar">
+          <div class="kpi" id="kpi"></div>
+          <div class="btnrow" style="margin:0"><button class="primary" id="btnDocx">Unduh Word (.docx)</button></div>
+        </div>
+        <div class="pv"><div class="paper" id="paper"></div></div>
+      </div>
+    </div>
+  </section>
+</main>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+/* ===== CORE: parsing, analisis, model laporan, renderer ===== */
+const Core = (function () {
+  'use strict';
+
+  /* ---------- Instrumen baku (untuk template, contoh, dan nama ringkas) ---------- */
+  const INSTR = [
+    { g: 'KESELARASAN', text: 'Tindakan implementasi perencanaan selaras dengan perencanaan pembelajaran pada awal pembelajaran, inti pembelajaran (proses memahami, mengaplikasi, dan merefleksi), dan penutupan pembelajaran', short: 'Keselarasan tindakan implementasi dengan perencanaan pembelajaran (awal, inti, dan penutup)', re: /implementasi perencanaan selaras/i,
+      ev: ['Guru membuka pembelajaran dengan salam, doa, dan pengecekan kehadiran.', 'Guru melakukan apersepsi yang menghubungkan materi dengan pengalaman murid.', 'Guru menyampaikan tujuan pembelajaran dan kegiatan yang akan dilakukan.', 'Guru melaksanakan kegiatan inti dan penutup sesuai alur yang tertuang dalam modul ajar.'] },
+    { text: 'Upaya mencapai tujuan pembelajaran menuju pencapaian dimensi profil lulusan selaras dengan perencanaan pembelajaran', short: 'Keselarasan upaya mencapai tujuan pembelajaran menuju dimensi profil lulusan', re: /upaya mencapai tujuan/i,
+      ev: ['Murid bekerja sama dalam kelompok untuk menyelesaikan tugas.', 'Murid mengemukakan pendapat secara santun saat diskusi.', 'Murid menunjukkan sikap tanggung jawab dalam menyelesaikan tugas.', 'Murid melakukan refleksi terhadap hasil belajarnya.'] },
+    { g: 'IMPLEMENTASI KERANGKA PEMBELAJARAN', text: 'Praktik pedagogis yang diimplementasikan sudah tergambar pada langkah pembelajaran dan/atau asesmen pembelajaran', short: 'Praktik pedagogis', re: /praktik pedagogis/i,
+      ev: ['Guru menggunakan pertanyaan pemantik untuk membangun pemahaman awal.', 'Guru memfasilitasi diskusi kelompok.', 'Guru memberikan bimbingan kepada murid yang mengalami kesulitan.', 'Guru melakukan asesmen formatif selama pembelajaran berlangsung.'] },
+    { text: 'Lingkungan belajar yang diimplementasikan sudah tergambar pada langkah pembelajaran dan/atau asesmen pembelajaran', short: 'Lingkungan belajar', re: /lingkungan belajar/i,
+      ev: ['Guru menciptakan suasana kelas yang aman dan nyaman.', 'Murid diberi kesempatan menyampaikan pendapat.', 'Guru menghargai setiap jawaban murid.', 'Interaksi pembelajaran berlangsung tertib dan kondusif.'] },
+    { text: 'Kemitraan pembelajaran yang diimplementasikan sudah tergambar pada langkah pembelajaran dan/atau asesmen pembelajaran', short: 'Kemitraan pembelajaran', re: /kemitraan pembelajaran/i,
+      ev: ['Murid bekerja dalam kelompok secara kolaboratif.', 'Guru memberikan kesempatan saling berbagi ide.', 'Murid saling membantu dalam menyelesaikan tugas.', 'Hasil kerja kelompok dipresentasikan dan ditanggapi bersama.'] },
+    { text: 'Pemanfaatan digital yang diimplementasikan sudah tergambar pada langkah pembelajaran dan/atau asesmen pembelajaran', short: 'Pemanfaatan digital', re: /pemanfaatan digital/i,
+      ev: ['Guru menggunakan media presentasi digital.', 'Murid mengakses sumber belajar digital.', 'Guru menampilkan video atau gambar pendukung pembelajaran.', 'Murid menggunakan perangkat digital untuk menyelesaikan tugas.'] },
+    { g: 'LANGKAH PEMBELAJARAN', text: 'Langkah pembelajaran yang dilakukan sesuai perencanaan dapat memfasilitasi tindakan saling MEMULIAKAN antara Guru-Murid, Murid-Guru, Murid-Murid yang tercermin dalam bahasa verbal dan nonverbal', short: 'Langkah pembelajaran memfasilitasi tindakan saling MEMULIAKAN (guru-murid, murid-guru, murid-murid)', re: /MEMULIAKAN/,
+      ev: ['Guru menggunakan bahasa yang santun kepada murid.', 'Murid mendengarkan pendapat teman dengan penuh perhatian.', 'Guru memberikan apresiasi terhadap partisipasi murid.', 'Murid menunjukkan sikap menghargai perbedaan pendapat.'] },
+    { text: 'Langkah pembelajaran sudah memfasilitasi murid untuk merasakan pengalaman belajar MEMAHAMI (terlibat aktif mengonstruksi pengetahuan agar dapat memahami secara mendalam konsep atau materi dari berbagai sumber dan konteks).', short: 'Pengalaman belajar MEMAHAMI', re: /MEMAHAMI/,
+      ev: ['Murid mengamati materi dari berbagai sumber belajar.', 'Murid mengajukan pertanyaan terkait materi.', 'Murid menjelaskan kembali konsep yang dipelajari.', 'Murid mendiskusikan hasil pemahamannya dengan teman.'] },
+    { text: 'Langkah pembelajaran sudah memfasilitasi murid untuk merasakan pengalaman belajar MENGAPLIKASI (mengaplikasi pemahaman secara kontekstual dalam kehidupan nyata sebagai bagian dari pendalaman pengetahuan)', short: 'Pengalaman belajar MENGAPLIKASI', re: /MENGAPLIKASI/,
+      ev: ['Murid menyelesaikan tugas berbasis masalah.', 'Murid menerapkan konsep dalam situasi nyata.', 'Murid membuat produk atau karya sederhana.', 'Murid mempresentasikan hasil penerapan konsep.'] },
+    { text: 'Langkah pembelajaran sudah memfasilitasi murid untuk merasakan pengalaman belajar MEREFLEKSI (mengevaluasi dan memaknai proses serta hasil dari tindakan atau praktik nyata yang telah mereka lakukan dan menentukan tindaklanjut ke depan; serta mengelola proses belajarnya secara mandiri).', short: 'Pengalaman belajar MEREFLEKSI', re: /MEREFLEKSI/,
+      ev: ['Murid mengidentifikasi hal yang telah dipahami.', 'Murid mengungkapkan kesulitan yang dialami.', 'Murid menyampaikan pengalaman belajar yang diperoleh.', 'Murid merencanakan langkah perbaikan untuk pembelajaran berikutnya.'] },
+    { text: 'Prinsip pembelajaran mendalam berupa berkesadaran, bermakna, dan/atau menggembirakan sudah tergambar pada setiap pengalaman belajar di langkah pembelajaran yang diimplementasikan', short: 'Prinsip pembelajaran mendalam (berkesadaran, bermakna, dan menggembirakan)', re: /prinsip pembelajaran mendalam/i,
+      ev: ['Murid terlibat aktif dalam seluruh kegiatan pembelajaran.', 'Materi dikaitkan dengan kehidupan sehari-hari.', 'Murid menunjukkan antusiasme selama pembelajaran.', 'Murid memperoleh kesempatan mengeksplorasi ide dan gagasan.'] },
+    { text: 'Praktik pembelajaran sudah mengakomodir pengalaman belajar yang sesuai dengan karakteristik murid (umur, tingkat perkembangan, kemampuan, bakat dan minat, gaya belajar, dll.)', short: 'Akomodasi pengalaman belajar sesuai karakteristik murid', re: /mengakomodir/i,
+      ev: ['Guru menggunakan metode pembelajaran yang bervariasi.', 'Guru menyediakan berbagai sumber belajar.', 'Guru memberikan bantuan sesuai kebutuhan murid.', 'Guru memberi kesempatan murid belajar sesuai kemampuan masing-masing.'] },
+    { text: 'Praktik Pembelajaran sudah melakukan asesmen untuk memberikan umpan balik guna memperbaiki proses pembelajaran.', short: 'Asesmen untuk memberikan umpan balik guna memperbaiki proses pembelajaran', re: /umpan balik guna/i,
+      ev: ['Guru mengajukan pertanyaan selama pembelajaran.', 'Guru mengamati aktivitas belajar murid.', 'Guru memberikan umpan balik terhadap hasil kerja murid.', 'Murid memperbaiki pekerjaannya berdasarkan umpan balik.'] },
+    { text: 'Praktik Pembelajaran sudah melakukan asesmen untuk mengukur ketercapaian tujuan pembelajaran sesuai karakteristik murid', short: 'Asesmen untuk mengukur ketercapaian tujuan pembelajaran sesuai karakteristik murid', re: /mengukur ketercapaian tujuan pembelajaran sesuai/i,
+      ev: ['Guru memberikan tugas yang sesuai tujuan pembelajaran.', 'Guru melaksanakan penilaian proses dan hasil.', 'Murid menunjukkan capaian belajar melalui produk atau presentasi.', 'Hasil asesmen digunakan untuk mengetahui tingkat penguasaan materi.'] },
+    { text: 'Asesmen sudah dilakukan berdasarkan kriteria yang jelas dalam mengukur ketercapaian tujuan pembelajaran', short: 'Asesmen berdasarkan kriteria yang jelas dalam mengukur ketercapaian tujuan pembelajaran', re: /kriteria yang jelas/i,
+      ev: ['Guru menyampaikan indikator pencapaian sebelum penilaian.', 'Guru menggunakan rubrik atau pedoman penilaian.', 'Murid mengetahui aspek yang akan dinilai.', 'Penilaian dilakukan secara konsisten sesuai kriteria.'] },
+  ];
+
+  const SAMPLE_REFL_A = ['Guru menggunakan metode pembelajaran yang bervariasi.', 'Murid terlibat aktif dalam seluruh kegiatan pembelajaran.', 'Murid menyelesaikan tugas berbasis masalah.', 'Guru menggunakan media presentasi digital.', 'Guru menggunakan bahasa yang santun kepada murid.'];
+
+  /* ---------- util ---------- */
+  const S = (v) => (v === null || v === undefined ? '' : String(v)).replace(/\r/g, '').trim();
+  const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const lcFirst = (s) => (s ? s.charAt(0).toLowerCase() + s.slice(1) : s);
+  const fmtNum = (n) => String(Math.round(n * 10) / 10).replace('.', ',');
+  const DOTS = '……………………………';
+  const orDots = (v, d) => (S(v) ? S(v) : d || DOTS);
+  const joinList = (a) => (a.length <= 1 ? a.join('') : a.slice(0, -1).join(', ') + ' dan ' + a[a.length - 1]);
+  const catByScore = (s) => (s >= 4 ? 'Sangat Baik' : s >= 3 ? 'Baik' : s >= 2 ? 'Cukup' : 'Perlu Pembinaan');
+  const catByPct = (p) => (p >= 86 ? 'Sangat Baik' : p >= 71 ? 'Baik' : p >= 56 ? 'Cukup' : 'Perlu Pembinaan');
+  const titleCase = (s) => s.toLowerCase().replace(/(^|\s)([a-z])/g, (m, a, b) => a + b.toUpperCase()).replace(/\b(Dan|Yang|Di|Ke|Dari)\b/g, (m) => m.toLowerCase());
+
+  function parseDelimited(text, delim) {
+    const rows = []; let row = [], cur = '', inQ = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (inQ) { if (c === '"') { if (text[i + 1] === '"') { cur += '"'; i++; } else inQ = false; } else cur += c; }
+      else if (c === '"' && cur === '') inQ = true;
+      else if (c === delim) { row.push(cur); cur = ''; }
+      else if (c === '\n') { row.push(cur); rows.push(row); row = []; cur = ''; }
+      else if (c !== '\r') cur += c;
+    }
+    row.push(cur); rows.push(row);
+    return rows;
+  }
+  function parseText(text) {
+    const delim = text.indexOf('\t') >= 0 ? '\t' : (text.indexOf(';') >= 0 && text.split(';').length > text.split(',').length ? ';' : ',');
+    return parseDelimited(text, delim);
+  }
+
+  /* ---------- ekstraksi dari grid ---------- */
+  const IDENT = [
+    ['sekolah', /^nama\s+sekolah/i], ['guru', /^nama\s+guru/i], ['nip', /^nip/i], ['mapel', /^mata\s+pelajaran/i],
+    ['kelas', /^kelas/i], ['tanggal', /^hari\s*\/?\s*tanggal/i], ['observer', /^observer/i],
+  ];
+  const isFlagOn = (v) => { const s = S(v).toLowerCase(); return v === true || s === '1' || s === 'v' || s === '✓' || s === '✔' || s === '√' || s === 'x' || s === 'ya' || s === 'true'; };
+  const isFlagCell = (v) => { const s = S(v).toLowerCase(); return v === true || v === false || ['0', '1', 'v', '✓', '✔', '√', 'x', 'ya', 'tidak', 'true', 'false'].includes(s); };
+
+  function extractReport(grid) {
+    const g = grid.map((r) => (r || []).map((c) => (typeof c === 'number' || typeof c === 'boolean' ? c : S(c))));
+    const at = (r, c) => (g[r] && g[r][c] !== undefined ? g[r][c] : '');
+    // 1) header
+    let hr = -1, cNo = 0, cAsp = 1, cKat = 2, cSkor = 3, cBuk = 4, cCat = 6;
+    for (let r = 0; r < g.length; r++) {
+      const row = g[r];
+      const iNo = row.findIndex((v) => /^no\.?$/i.test(S(v)));
+      const iAsp = row.findIndex((v) => /aspek\s+yang\s+diamati/i.test(S(v)));
+      if (iNo >= 0 && iAsp >= 0) {
+        hr = r; cNo = iNo; cAsp = iAsp;
+        const f = (re) => row.findIndex((v) => re.test(S(v)));
+        const k = f(/^kategori$/i), s = f(/^skor$/i), b = f(/bukti\s+pembelajaran/i), c = f(/^catatan$/i);
+        cKat = k >= 0 ? k : cAsp + 1; cSkor = s >= 0 ? s : cKat + 1; cBuk = b >= 0 ? b : cSkor + 1; cCat = c >= 0 ? c : cBuk + 2;
+        break;
+      }
+    }
+    if (hr < 0) return { ok: false, error: 'Kolom "NO." dan "ASPEK YANG DIAMATI" tidak ditemukan.' };
+
+    // 2) identitas
+    const identity = { sekolah: '', guru: '', nip: '', mapel: '', kelas: '', tanggal: '', observer: '' };
+    for (let r = 0; r < hr; r++) {
+      const row = g[r];
+      for (let c = 0; c < row.length; c++) {
+        const t = S(row[c]); if (!t) continue;
+        for (const [key, re] of IDENT) {
+          if (identity[key] || !re.test(t)) continue;
+          let val = '';
+          const m = t.match(/:\s*(.+)$/);
+          if (m && m[1].trim()) val = m[1].trim();
+          else for (let j = c + 1; j < row.length; j++) { const v = S(row[j]).replace(/^:\s*/, ''); if (v) { val = v; break; } }
+          if (val && !/^[…\.\s_-]+$/.test(val)) identity[key] = val;
+          break;
+        }
+      }
+    }
+
+    // 3) aspek
+    const aspects = []; const warnings = [];
+    let cur = null, group = '', end = g.length;
+    for (let r = hr + 1; r < g.length; r++) {
+      const row = g[r];
+      if (row.some((v) => /^skor\s+penilaian/i.test(S(v)))) { end = r; break; }
+      const no = S(at(r, cNo)), asp = S(at(r, cAsp));
+      const isNo = /^\d+$/.test(no);
+      // bukti
+      let flag = null, txt = '';
+      for (let j = cBuk; j < Math.min(row.length, cCat > cBuk ? cCat : row.length); j++) {
+        const v = row[j];
+        if (flag === null && isFlagCell(v) && S(v) !== '') { flag = isFlagOn(v); continue; }
+        if (S(v) && !(typeof v === 'number') && S(v).length > 1) { txt = S(v); break; }
+      }
+      if (isNo && asp.length > 3) {
+        cur = { no: parseInt(no, 10), text: asp.replace(/["“”]/g, '').replace(/\s*\n\s*/g, ' ').trim(), kat: S(at(r, cKat)), skorRaw: at(r, cSkor), ev: [], catatan: '', group };
+        aspects.push(cur);
+      } else if (!isNo && asp && !S(at(r, cKat)) && !S(at(r, cSkor)) && !txt) {
+        group = asp.replace(/\s+/g, ' ').trim();
+        continue;
+      }
+      if (cur && txt) cur.ev.push({ text: txt, ok: flag === null ? true : flag });
+      const cn = S(at(r, cCat)); if (cur && cn && cn !== txt) cur.catatan = (cur.catatan ? cur.catatan + ' ' : '') + cn;
+    }
+    if (!aspects.length) return { ok: false, error: 'Tidak ada baris aspek yang terbaca di bawah header tabel.' };
+
+    // nama ringkas, skor
+    aspects.forEach((a, i) => {
+      const hit = INSTR.find((x) => x.re.test(a.text));
+      a.short = hit ? hit.short : (a.text.length > 150 ? a.text.slice(0, 147) + '…' : a.text);
+      const fs = Number(a.skorRaw);
+      const cnt = a.ev.filter((e) => e.ok).length;
+      if (S(a.skorRaw) !== '' && isFinite(fs) && fs >= 0 && fs <= 4) {
+        a.skor = fs;
+        if (a.ev.length && cnt !== fs) warnings.push('Aspek ' + a.no + ': skor di berkas (' + fs + ') berbeda dengan jumlah indikator teramati (' + cnt + '). Skor di berkas yang dipakai.');
+      } else { a.skor = Math.min(4, cnt); if (!a.ev.length) warnings.push('Aspek ' + a.no + ': skor tidak terbaca.'); }
+    });
+    // grup default bila tidak ada baris judul bagian
+    if (aspects.every((a) => !a.group)) {
+      aspects.forEach((a) => { a.group = a.no <= 2 ? 'KESELARASAN' : a.no <= 6 ? 'IMPLEMENTASI KERANGKA PEMBELAJARAN' : 'LANGKAH PEMBELAJARAN'; });
+    } else { let last = ''; aspects.forEach((a) => { if (a.group) last = a.group; else a.group = last || 'ASPEK PENGAMATAN'; }); }
+
+    // 4) refleksi & penutup
+    const refl = { a: [], b: [], c: [] }; let city = '', tglLaporan = '', observerNip = '';
+    const Q = [['a', /^pelajaran\s+apa\s+yang\s+telah\s+diperoleh/i], ['b', /^hal-?\s*hal\s+apa\s+saja\s+yang\s+pencapaiannya/i], ['c', /^rencana\s+tindak\s+lanjut\s+apa/i]];
+    let curQ = null;
+    for (let r = end; r < g.length; r++) {
+      for (let c = 0; c < g[r].length; c++) {
+        const t = S(g[r][c]); if (!t || typeof g[r][c] === 'number') continue;
+        const q = Q.find(([, re]) => re.test(t));
+        if (q) { curQ = q[0]; continue; }
+        const nm = t.match(/^nip\.?\s*:?\s*(\S.*)$/i);
+        if (nm && /\d/.test(nm[1])) { observerNip = nm[1].trim(); curQ = null; continue; }
+        const cm = t.match(/^([A-Z][a-z]+(?:\s[A-Za-z]+)?),\s*(.*)$/);
+        if (cm) {
+          const rest = cm[2].replace(/[…._]+/g, ' ').replace(/\s+/g, ' ').trim();
+          if (rest === '' || /^\d{1,2}\s+[A-Za-z]+\s+\d{4}$/.test(rest)) { city = cm[1].trim(); tglLaporan = rest; curQ = null; continue; }
+        }
+        if (/^(observer|refleksi|nip\.?)$/i.test(t)) { if (/^observer$/i.test(t)) curQ = null; continue; }
+        if (curQ) {
+          t.split(/\n+/).forEach((ln) => {
+            const l = ln.replace(/^\s*(\d+[.)]|[-•*])\s*/, '').trim();
+            if (l && !/^(selanjutnya:?|deskripsi:?)$/i.test(l)) refl[curQ].push(l);
+          });
+        }
+      }
+    }
+    return { ok: true, identity, aspects, refl, city, tglLaporan, observerNip, warnings };
+  }
+
+  /* ---------- analisis ---------- */
+  function analyse(aspects) {
+    const order = []; aspects.forEach((a) => { if (!order.includes(a.group)) order.push(a.group); });
+    const comps = order.map((g, i) => {
+      const as = aspects.filter((a) => a.group === g);
+      const max = as.length * 4, got = as.reduce((s, a) => s + a.skor, 0), pct = max ? (got / max) * 100 : 0;
+      return { letter: String.fromCharCode(65 + i), key: g, name: titleCase(g), aspects: as, max, got, pct, cat: catByPct(pct) };
+    });
+    const max = aspects.length * 4, got = aspects.reduce((s, a) => s + a.skor, 0);
+    const nilai = max ? Math.round((got / max) * 1000) / 10 : 0;
+    return { comps, max, got, nilai, cat: catByPct(nilai), n: aspects.length, perfect: aspects.every((a) => a.skor >= 4) };
+  }
+  const unobs = (a) => a.ev.filter((e) => !e.ok).map((e) => e.text.replace(/[.]+$/, ''));
+
+  function pickEven(arr, k) {
+    if (arr.length <= k) return arr.slice();
+    const out = []; for (let i = 0; i < k; i++) out.push(arr[Math.floor((i * arr.length) / k)]);
+    return out;
+  }
+
+  /* ---------- teks otomatis ---------- */
+  function autoRefl(aspects, an) {
+    const strong = aspects.filter((a) => a.skor >= 4 && a.ev.some((e) => e.ok));
+    const a = pickEven(strong, 5).map((x) => x.ev.find((e) => e.ok).text);
+    const weak = aspects.filter((x) => x.skor < 4);
+    let b;
+    if (!weak.length) b = ['Berdasarkan hasil pengamatan, seluruh aspek memperoleh skor maksimal (4) sehingga tidak ditemukan aspek yang capaiannya belum memuaskan secara signifikan.'];
+    else b = weak.map((x) => 'Aspek ' + x.no + ' (' + x.short + ') memperoleh skor ' + x.skor + (unobs(x).length ? '; indikator yang belum teramati: ' + unobs(x).map(lcFirst).join('; ') + '.' : '.'));
+    const c = [];
+    weak.forEach((x) => c.push('Melakukan perbaikan pada aspek ' + x.no + ' (' + x.short + ')' + (unobs(x).length ? ', khususnya agar ' + joinList(unobs(x).map(lcFirst)) : '') + ', disertai pendampingan dan pemantauan pada supervisi berikutnya.'));
+    c.push('Mempertahankan dan menjaga konsistensi praktik baik yang telah dilaksanakan dalam pembelajaran.');
+    c.push('Membagikan praktik baik kepada rekan sejawat melalui forum komunitas belajar, kegiatan berbagi praktik baik, atau observasi antarteman.');
+    if (an.perfect) c.push('Mengembangkan pengayaan dan tantangan lanjutan bagi murid yang telah mencapai tujuan pembelajaran, serta terus memberikan pendampingan bagi murid yang masih membutuhkan bantuan.');
+    c.push('Memanfaatkan hasil asesmen dan refleksi murid sebagai dasar penyempurnaan perencanaan pembelajaran berikutnya.');
+    c.push('Melaksanakan supervisi lanjutan secara berkala untuk memantau keberlanjutan kualitas pembelajaran.');
+    return { a, b, c };
+  }
+  const linesToItems = (t) => S(t).split(/\n+/).map((l) => l.replace(/^\s*(\d+[.)]|[-•*])\s*/, '').trim()).filter(Boolean);
+
+  const COMP_INTRO = [
+    [/keselarasan/i, 'Komponen ini menilai kesesuaian pelaksanaan pembelajaran dengan perencanaan (modul ajar) serta arah pencapaian dimensi profil lulusan.'],
+    [/kerangka/i, 'Komponen ini menilai implementasi kerangka pembelajaran, yaitu praktik pedagogis, lingkungan belajar, kemitraan pembelajaran, dan pemanfaatan digital.'],
+    [/langkah/i, 'Komponen ini menilai langkah pembelajaran yang memfasilitasi tindakan saling memuliakan, pengalaman belajar memahami, mengaplikasi, dan merefleksi, penerapan prinsip pembelajaran mendalam, akomodasi karakteristik murid, serta pelaksanaan asesmen.'],
+  ];
+
+  /* ---------- model laporan (blok) ---------- */
+  function buildBlocks(rep) {
+    const e = rep.edit, aspects = rep.data.aspects, an = analyse(aspects);
+    const B = [];
+    const tgl = orDots(e.tanggal);
+    const guruTxt = S(e.guru) ? 'guru atas nama ' + S(e.guru) : 'guru yang bersangkutan';
+
+    B.push({ t: 'title', lines: ['LAPORAN HASIL SUPERVISI PEMBELAJARAN MENDALAM', '(DEEP LEARNING)'], sub: 'Hari/Tanggal Pelaksanaan: ' + tgl });
+
+    B.push({ t: 'h', text: 'I. PENDAHULUAN' });
+    B.push({ t: 'sub', text: 'A. Latar Belakang' });
+    B.push({ t: 'p', text: 'Supervisi pembelajaran merupakan salah satu upaya pembinaan profesional untuk memastikan bahwa proses pembelajaran di kelas berjalan sesuai perencanaan dan mampu menghadirkan pengalaman belajar yang bermakna bagi murid. Melalui supervisi, observer dapat memperoleh gambaran objektif mengenai praktik pembelajaran yang dilaksanakan guru, mengidentifikasi praktik baik yang perlu dipertahankan, serta merumuskan langkah perbaikan yang diperlukan.' });
+    B.push({ t: 'p', text: 'Pendekatan pembelajaran mendalam menekankan pengalaman belajar yang berkesadaran, bermakna, dan menggembirakan melalui tiga tahap pengalaman belajar, yaitu memahami, mengaplikasi, dan merefleksi. Pelaksanaan pendekatan tersebut ditopang oleh kerangka pembelajaran yang meliputi praktik pedagogis, lingkungan belajar, kemitraan pembelajaran, dan pemanfaatan digital. Oleh karena itu, supervisi ini difokuskan pada keselarasan antara perencanaan dan pelaksanaan pembelajaran, implementasi kerangka pembelajaran, serta langkah pembelajaran yang dilaksanakan guru di kelas.' });
+    B.push({ t: 'sub', text: 'B. Tujuan' });
+    B.push({ t: 'p', text: 'Supervisi ini bertujuan untuk:', after: 60 });
+    B.push({ t: 'ol', items: ['memperoleh gambaran tentang keselarasan antara perencanaan pembelajaran dengan pelaksanaannya di kelas;', 'mengetahui implementasi kerangka pembelajaran mendalam yang meliputi praktik pedagogis, lingkungan belajar, kemitraan pembelajaran, dan pemanfaatan digital;', 'menilai langkah pembelajaran yang memfasilitasi pengalaman belajar memuliakan, memahami, mengaplikasi, dan merefleksi, serta pelaksanaan asesmen; dan', 'merumuskan refleksi dan rencana tindak lanjut untuk peningkatan kualitas pembelajaran.'] });
+    B.push({ t: 'sub', text: 'C. Instrumen dan Metode' });
+    B.push({ t: 'p', text: 'Supervisi dilaksanakan melalui observasi langsung pembelajaran di kelas menggunakan Instrumen Supervisi Pembelajaran Mendalam yang memuat ' + an.n + ' aspek pengamatan beserta indikator bukti pembelajarannya. Setiap aspek dinilai dengan skala 1 sampai 4 (Perlu Pembinaan, Cukup, Baik, dan Sangat Baik) berdasarkan bukti pembelajaran yang teramati.' });
+
+    B.push({ t: 'h', text: 'II. IDENTITAS PELAKSANAAN SUPERVISI' });
+    B.push({ t: 'kv', rows: [['Nama Sekolah', orDots(e.sekolah)], ['Nama Guru', orDots(e.guru)], ['NIP', orDots(e.nip)], ['Mata Pelajaran', orDots(e.mapel)], ['Kelas/Semester', orDots(e.kelas)], ['Hari/Tanggal', tgl], ['Observer', orDots(e.observer)]] });
+
+    B.push({ t: 'h', text: 'III. HASIL SUPERVISI' });
+    B.push({ t: 'sub', text: 'A. Rekapitulasi Skor per Aspek' });
+    const w1 = [600, 5570, 1700, 1200];
+    const rows1 = [];
+    let lastG = null;
+    aspects.forEach((a) => {
+      if (a.group !== lastG) { const c = an.comps.find((x) => x.key === a.group); rows1.push({ cells: [{ text: c.letter + '. ' + a.group.toUpperCase(), bold: true, fill: 'F2F2F2', span: 4 }] }); lastG = a.group; }
+      rows1.push({ cells: [{ text: String(a.no), align: 'c' }, { text: a.short }, { text: catByScore(a.skor), align: 'c' }, { text: String(a.skor), align: 'c' }] });
+    });
+    rows1.push({ cells: [{ text: 'Jumlah Skor Perolehan', bold: true, align: 'r', fill: 'D9E2F3', span: 3 }, { text: String(an.got), bold: true, align: 'c', fill: 'D9E2F3' }] });
+    B.push({ t: 'table', widths: w1, head: ['No', 'Aspek yang Diamati', 'Kategori', 'Skor'], rows: rows1 });
+    B.push({ t: 'gap' });
+    B.push({ t: 'sub', text: 'B. Rekapitulasi per Komponen' });
+    const w2 = [3270, 1200, 1500, 1600, 1500];
+    const rows2 = an.comps.map((c) => ({ cells: [{ text: c.letter + '. ' + c.name }, { text: String(c.aspects.length), align: 'c' }, { text: String(c.max), align: 'c' }, { text: String(c.got), align: 'c' }, { text: fmtNum(c.pct) + '%', align: 'c' }] }));
+    rows2.push({ cells: [{ text: 'Total', bold: true, fill: 'D9E2F3' }, { text: String(an.n), bold: true, align: 'c', fill: 'D9E2F3' }, { text: String(an.max), bold: true, align: 'c', fill: 'D9E2F3' }, { text: String(an.got), bold: true, align: 'c', fill: 'D9E2F3' }, { text: fmtNum(an.max ? (an.got / an.max) * 100 : 0) + '%', bold: true, align: 'c', fill: 'D9E2F3' }] });
+    B.push({ t: 'table', widths: w2, head: ['Komponen', 'Jumlah Aspek', 'Skor Maksimal', 'Skor Perolehan', 'Persentase'], rows: rows2 });
+    B.push({ t: 'gap' });
+    B.push({ t: 'sub', text: 'C. Nilai Akhir dan Kategori' });
+    B.push({ t: 'p', runs: [{ text: 'Nilai = (Skor Perolehan ÷ Skor Maksimal) × 100 = (' + an.got + ' ÷ ' + an.max + ') × 100 = ' }, { text: fmtNum(an.nilai), bold: true }, { text: '. Berdasarkan hasil tersebut, pelaksanaan pembelajaran yang disupervisi berada pada kategori ' }, { text: an.cat.toUpperCase(), bold: true }, { text: '.' }] });
+    B.push({ t: 'p', text: 'Keterangan skala penilaian instrumen dan konversi nilai akhir:', after: 60, keep: true });
+    B.push({ t: 'table', widths: [1200, 2800, 5070], head: ['Skor', 'Kategori', 'Deskripsi'], rows: [
+      { cells: [{ text: '4', align: 'c' }, { text: 'Sangat Baik' }, { text: 'Seluruh indikator bukti pembelajaran teramati (nilai akhir 86–100)' }] },
+      { cells: [{ text: '3', align: 'c' }, { text: 'Baik' }, { text: 'Sebagian besar indikator teramati (nilai akhir 71–85)' }] },
+      { cells: [{ text: '2', align: 'c' }, { text: 'Cukup' }, { text: 'Sebagian indikator teramati (nilai akhir 56–70)' }] },
+      { cells: [{ text: '1', align: 'c' }, { text: 'Perlu Pembinaan' }, { text: 'Sedikit atau belum ada indikator yang teramati (nilai akhir di bawah 56)' }] },
+    ] });
+
+    B.push({ t: 'h', text: 'IV. BUKTI PEMBELAJARAN YANG TERAMATI' });
+    B.push({ t: 'p', text: 'Berikut bukti pembelajaran pada setiap aspek selama kegiatan supervisi.', keep: true });
+    B.push({ t: 'table', widths: [600, 2900, 5570], head: ['No', 'Aspek', 'Bukti Pembelajaran'], top: true, rows: aspects.map((a) => ({ cells: [{ text: String(a.no), align: 'c' }, { text: a.short }, { items: a.ev.length ? a.ev : [{ text: 'Belum ada bukti pembelajaran yang dicatat.', ok: true }] }] })) });
+
+    B.push({ t: 'h', text: 'V. PEMBAHASAN' });
+    an.comps.forEach((c) => {
+      B.push({ t: 'sub', text: c.letter + '. ' + c.name });
+      const intro = (COMP_INTRO.find(([re]) => re.test(c.key)) || [null, ''])[1];
+      B.push({ t: 'p', text: (intro ? intro + ' ' : '') + 'Komponen ini memperoleh skor ' + c.got + ' dari ' + c.max + ' (' + fmtNum(c.pct) + '%) dengan kategori ' + c.cat + '.' });
+      const strong = c.aspects.filter((a) => a.skor >= 4), weak = c.aspects.filter((a) => a.skor < 4);
+      if (!weak.length) {
+        const ex = strong.filter((a) => a.ev.some((v) => v.ok)).slice(0, 4).map((a) => lcFirst(a.ev.find((v) => v.ok).text.replace(/[.]+$/, '')));
+        B.push({ t: 'p', text: 'Seluruh ' + c.aspects.length + ' aspek pada komponen ini memperoleh skor maksimal (4)' + (ex.length ? ', antara lain tampak dari bukti bahwa ' + ex.join('; ') + '.' : '.') });
+      } else {
+        if (strong.length) B.push({ t: 'p', text: 'Aspek yang mencapai skor maksimal: ' + joinList(strong.map((a) => 'aspek ' + a.no)) + '.' });
+        weak.forEach((a) => B.push({ t: 'p', text: 'Aspek ' + a.no + ' (' + a.short + ') memperoleh skor ' + a.skor + ' dengan kategori ' + catByScore(a.skor) + (unobs(a).length ? '. Indikator yang belum teramati: ' + unobs(a).map(lcFirst).join('; ') + '.' : '.') }));
+      }
+      c.aspects.filter((a) => a.catatan).forEach((a) => B.push({ t: 'p', text: 'Catatan observer pada aspek ' + a.no + ': ' + a.catatan.replace(/[.]+$/, '') + '.' }));
+    });
+
+    const auto = autoRefl(aspects, an);
+    const rA = linesToItems(e.refA).length ? linesToItems(e.refA) : auto.a;
+    const rB = linesToItems(e.refB).length ? linesToItems(e.refB) : auto.b;
+    const rC = linesToItems(e.refC).length ? linesToItems(e.refC) : auto.c;
+    const listOrPara = (items) => (items.length === 1 ? { t: 'p', text: items[0] } : { t: 'ol', items });
+    B.push({ t: 'h', text: 'VI. REFLEKSI' });
+    B.push({ t: 'sub', text: 'A. Pelajaran yang Diperoleh dari Implementasi Perencanaan Pembelajaran beserta Faktor Pendukungnya' });
+    B.push(listOrPara(rA));
+    B.push({ t: 'sub', text: 'B. Hal yang Pencapaiannya Belum Memuaskan beserta Faktor Penghambatnya' });
+    B.push(listOrPara(rB));
+    B.push({ t: 'sub', text: 'C. Rencana Tindak Lanjut' });
+    B.push(listOrPara(rC));
+
+    B.push({ t: 'h', text: 'VII. KESIMPULAN DAN REKOMENDASI' });
+    B.push({ t: 'sub', text: 'A. Kesimpulan' });
+    let kes = 'Berdasarkan hasil supervisi pembelajaran yang dilaksanakan pada ' + tgl + ', pelaksanaan pembelajaran mendalam oleh ' + guruTxt + ' memperoleh skor ' + an.got + ' dari skor maksimal ' + an.max + ' dengan nilai ' + fmtNum(an.nilai) + ' dan berada pada kategori ' + an.cat + '.';
+    if (an.perfect) kes += ' Seluruh ' + an.n + ' aspek yang diamati, mencakup ' + joinList(an.comps.map((c) => lcFirst(c.name))) + ', memperoleh skor 4.';
+    else {
+      const best = an.comps.slice().sort((x, y) => y.pct - x.pct)[0], low = aspects.filter((a) => a.skor < 4);
+      kes += ' Capaian tertinggi terdapat pada komponen ' + lcFirst(best.name) + ', sedangkan aspek yang perlu ditingkatkan adalah ' + joinList(low.map((a) => 'aspek ' + a.no)) + '.';
+    }
+    B.push({ t: 'p', text: kes });
+    B.push({ t: 'sub', text: 'B. Rekomendasi' });
+    let rek;
+    if (an.perfect || an.nilai >= 86) rek = 'Guru disarankan mempertahankan dan mengembangkan praktik pembelajaran yang telah baik, serta berbagi praktik tersebut dengan rekan sejawat.' + (an.perfect ? '' : ' Aspek yang belum mencapai skor maksimal perlu ditindaklanjuti sesuai rencana tindak lanjut.') + ' Sekolah disarankan memfasilitasi keberlanjutan pembinaan dan pertukaran praktik baik agar dampaknya dirasakan lebih luas.';
+    else if (an.nilai >= 71) rek = 'Guru disarankan mempertahankan praktik yang telah baik dan memprioritaskan perbaikan pada aspek yang belum mencapai skor maksimal sesuai rencana tindak lanjut. Sekolah disarankan menyediakan pendampingan dan supervisi lanjutan untuk memastikan perbaikan berjalan.';
+    else rek = 'Guru disarankan mengikuti pembinaan dan pendampingan berkelanjutan, terutama pada aspek yang memperoleh skor rendah, melalui diskusi dengan observer, kegiatan komunitas belajar, dan penyempurnaan perencanaan pembelajaran. Sekolah disarankan menjadwalkan supervisi ulang untuk memantau perkembangan.';
+    B.push({ t: 'p', text: rek });
+    B.push({ t: 'p', text: 'Demikian laporan hasil supervisi ini disusun untuk dipergunakan sebagaimana mestinya.', after: 240 });
+
+    B.push({ t: 'sig', cols: [
+      { lines: ['', 'Guru yang Disupervisi', '', '', '', '', orDots(e.guru), 'NIP. ' + orDots(e.nip, '……………………')] },
+      { lines: [orDots(e.kota, '…………') + ', ' + orDots(e.tglLaporan, '……………………'), 'Observer', '', '', '', '', orDots(e.observer), 'NIP. ' + orDots(e.observerNip, '……………………')] },
+    ] });
+    if (e.kepsekOn) B.push({ t: 'sig', cols: [{ lines: ['Mengetahui,', 'Kepala Sekolah', '', '', '', '', orDots(e.kepsek), 'NIP. ' + orDots(e.kepsekNip, '……………………')] }], single: true, gapBefore: true });
+    return B;
+  }
+
+  /* ---------- renderer HTML (pratinjau) ---------- */
+  function renderHTML(blocks) {
+    const out = [];
+    blocks.forEach((b) => {
+      switch (b.t) {
+        case 'title': out.push('<div class="r-title">' + b.lines.map((l, i) => '<div class="' + (i ? 'r-t2' : 'r-t1') + '">' + esc(l) + '</div>').join('') + '<div class="r-sub">' + esc(b.sub) + '</div></div>'); break;
+        case 'h': out.push('<h3 class="r-h">' + esc(b.text) + '</h3>'); break;
+        case 'sub': out.push('<h4 class="r-s">' + esc(b.text) + '</h4>'); break;
+        case 'p': out.push('<p class="r-p">' + (b.runs ? b.runs.map((r) => (r.bold ? '<b>' + esc(r.text) + '</b>' : esc(r.text))).join('') : esc(b.text)) + '</p>'); break;
+        case 'ol': out.push('<div class="r-ol">' + b.items.map((it, i) => '<div class="li"><span class="n">' + (i + 1) + '.</span><span>' + esc(it) + '</span></div>').join('') + '</div>'); break;
+        case 'kv': out.push('<table class="r-kv">' + b.rows.map((r) => '<tr><td>' + esc(r[0]) + '</td><td>:</td><td>' + esc(r[1]) + '</td></tr>').join('') + '</table>'); break;
+        case 'gap': out.push('<div class="r-gap"></div>'); break;
+        case 'table': {
+          const tot = b.widths.reduce((s, x) => s + x, 0);
+          let h = '<div class="r-tw"><table class="r-tb"><colgroup>' + b.widths.map((w) => '<col style="width:' + ((w / tot) * 100).toFixed(2) + '%">').join('') + '</colgroup><thead><tr>' + b.head.map((x) => '<th>' + esc(x) + '</th>').join('') + '</tr></thead><tbody>';
+          b.rows.forEach((r) => {
+            h += '<tr>' + r.cells.map((c) => {
+              const st = (c.fill ? 'background:#' + c.fill + ';' : '') + (c.align === 'c' ? 'text-align:center;' : c.align === 'r' ? 'text-align:right;' : '') + (c.bold ? 'font-weight:700;' : '');
+              const inner = c.items ? c.items.map((it, i) => '<div class="li' + (it.ok ? '' : ' off') + '"><span class="n">' + (i + 1) + '.</span><span>' + esc(it.text) + (it.ok ? '' : ' (belum teramati)') + '</span></div>').join('') : esc(c.text);
+              return '<td' + (c.span ? ' colspan="' + c.span + '"' : '') + ' style="' + st + '">' + inner + '</td>';
+            }).join('') + '</tr>';
+          });
+          out.push(h + '</tbody></table></div>');
+          break;
+        }
+        case 'sig':
+          out.push('<div class="r-sig' + (b.single ? ' single' : '') + '">' + b.cols.map((c) => '<div class="c">' + c.lines.map((l) => '<div>' + (l ? esc(l) : '&nbsp;') + '</div>').join('') + '</div>').join('') + '</div>');
+          break;
+      }
+    });
+    return out.join('');
+  }
+
+  /* ---------- renderer DOCX ---------- */
+  function buildDocx(docx, blocks, title) {
+    const { Document, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, AlignmentType, BorderStyle, ShadingType, Footer, PageNumber, VerticalAlign, HeadingLevel, Tab, TabStopType } = docx;
+    const FONT = 'Times New Roman', W = 9070;
+    const thin = { style: BorderStyle.SINGLE, size: 4, color: '000000' };
+    const borders = { top: thin, bottom: thin, left: thin, right: thin };
+    const nb = { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' };
+    const noBorders = { top: nb, bottom: nb, left: nb, right: nb };
+    const margins = { top: 60, bottom: 60, left: 100, right: 100 };
+    const AL = { l: AlignmentType.LEFT, c: AlignmentType.CENTER, r: AlignmentType.RIGHT };
+    const run = (t, o = {}) => new TextRun({ text: t, font: FONT, size: o.size || 24, bold: o.bold, italics: o.italics, color: o.color });
+    const para = (kids, o = {}) => new Paragraph({ alignment: o.align || AlignmentType.JUSTIFIED, spacing: { after: o.after === undefined ? 120 : o.after, before: o.before || 0, line: o.line || 300 }, keepNext: o.keep, indent: o.indent, tabStops: o.tabStops, border: o.border, heading: o.heading, children: kids });
+    const item = (n, text, o = {}) => para([new TextRun({ children: [n + '.', new Tab(), text], font: FONT, size: o.size || 24, italics: o.italics, color: o.color })], { align: o.align, indent: { left: o.left || 567, hanging: o.hang || 397 }, tabStops: [{ type: TabStopType.LEFT, position: o.left || 567 }], after: o.after === undefined ? 60 : o.after, line: o.line || 288 });
+    const cellPara = (t, o = {}) => new Paragraph({ alignment: AL[o.align] || AlignmentType.LEFT, spacing: { after: 0, line: 264 }, keepNext: o.keep, children: [run(t, { size: 22, bold: o.bold })] });
+    const mkCell = (kids, w, o = {}) => new TableCell({ width: { size: w, type: WidthType.DXA }, borders: o.nob ? noBorders : borders, margins, verticalAlign: o.top ? VerticalAlign.TOP : VerticalAlign.CENTER, columnSpan: o.span, shading: o.fill ? { fill: o.fill, type: ShadingType.CLEAR, color: 'auto' } : undefined, children: kids });
+    const kids = [];
+    blocks.forEach((b) => {
+      if (b.t === 'title') {
+        b.lines.forEach((l) => kids.push(para([run(l, { bold: true, size: 26 })], { align: AlignmentType.CENTER, after: 0 })));
+        kids.push(para([run(b.sub)], { align: AlignmentType.CENTER, after: 240, border: { bottom: { style: BorderStyle.SINGLE, size: 12, color: '000000', space: 6 } } }));
+      } else if (b.t === 'h') kids.push(para([run(b.text, { bold: true })], { before: 240, after: 120, keep: true, heading: HeadingLevel.HEADING_2, align: AlignmentType.LEFT }));
+      else if (b.t === 'sub') kids.push(para([run(b.text, { bold: true })], { before: 120, after: 80, keep: true, align: AlignmentType.LEFT }));
+      else if (b.t === 'p') kids.push(para(b.runs ? b.runs.map((r) => run(r.text, r)) : [run(b.text)], { after: b.after, keep: b.keep }));
+      else if (b.t === 'ol') b.items.forEach((t, i) => kids.push(item(i + 1, t)));
+      else if (b.t === 'gap') kids.push(para([], { after: 120 }));
+      else if (b.t === 'kv') {
+        kids.push(new Table({ width: { size: W, type: WidthType.DXA }, columnWidths: [2400, 300, 6370], rows: b.rows.map(([k, v]) => new TableRow({ cantSplit: true, children: [mkCell([new Paragraph({ keepNext: true, children: [run(k)] })], 2400, { nob: true }), mkCell([new Paragraph({ keepNext: true, children: [run(':')] })], 300, { nob: true }), mkCell([new Paragraph({ keepNext: true, children: [run(v)] })], 6370, { nob: true })] })) }));
+      } else if (b.t === 'table') {
+        const cols = b.widths;
+        const head = new TableRow({ tableHeader: true, cantSplit: true, children: b.head.map((h, i) => mkCell([cellPara(h, { bold: true, align: 'c' })], cols[i], { fill: 'D9E2F3' })) });
+        const rows = b.rows.map((r) => {
+          let ci = 0;
+          return new TableRow({ cantSplit: true, children: r.cells.map((c) => {
+            const span = c.span || 1; const w = cols.slice(ci, ci + span).reduce((s, x) => s + x, 0); ci += span;
+            const content = c.items ? c.items.map((it, i) => item(i + 1, it.text + (it.ok ? '' : ' (belum teramati)'), { align: AlignmentType.LEFT, size: 22, left: 340, hang: 340, after: 40, line: 264, italics: !it.ok, color: it.ok ? undefined : '7F7F7F' })) : [cellPara(c.text, { bold: c.bold, align: c.align })];
+            return mkCell(content, w, { fill: c.fill, span: c.span, top: !!c.items });
+          }) });
+        });
+        kids.push(new Table({ width: { size: W, type: WidthType.DXA }, columnWidths: cols, rows: [head, ...rows] }));
+      } else if (b.t === 'sig') {
+        if (b.gapBefore) kids.push(para([], { after: 240 }));
+        const w = b.single ? W : W / 2;
+        kids.push(new Table({ width: { size: W, type: WidthType.DXA }, columnWidths: b.single ? [W] : [W / 2, W / 2], rows: [new TableRow({ cantSplit: true, children: b.cols.map((c) => mkCell(c.lines.map((l) => new Paragraph({ alignment: AlignmentType.CENTER, keepNext: true, spacing: { after: 0, line: 300 }, children: [run(l)] })), w, { nob: true, top: true })) })] }));
+      }
+    });
+    return new Document({
+      creator: 'Laporan Supervisi', title: title || 'Laporan Hasil Supervisi Pembelajaran Mendalam',
+      styles: { default: { document: { run: { font: FONT, size: 24 } } }, paragraphStyles: [{ id: 'Heading2', name: 'Heading 2', basedOn: 'Normal', next: 'Normal', quickFormat: true, run: { font: FONT, size: 24, bold: true }, paragraph: { spacing: { before: 240, after: 120 }, outlineLevel: 1 } }] },
+      sections: [{ properties: { page: { size: { width: 11906, height: 16838 }, margin: { top: 1418, bottom: 1418, left: 1418, right: 1418 } } },
+        footers: { default: new Footer({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Laporan Hasil Supervisi Pembelajaran Mendalam  |  Halaman ', font: FONT, size: 18 }), new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: 18 })] })] }) },
+        children: kids }],
+    });
+  }
+
+  /* ---------- grid instrumen (template & contoh) ---------- */
+  function makeGrid(opt) {
+    const flag = opt.flag, id = opt.identity || {};
+    const g = [], merges = [], formulas = [];
+    const row = (arr) => { const r = arr.slice(); while (r.length < 7) r.push(''); g.push(r); return g.length - 1; };
+    row(['INSTRUMEN SUPERVISI PEMBELAJARAN MENDALAM']);
+    [['NAMA SEKOLAH :', id.sekolah], ['Nama Guru  :', id.guru], ['NIP :', id.nip], ['Mata Pelajaran  :', id.mapel], ['Kelas/Semester  :', id.kelas], ['Hari/Tanggal  :', id.tanggal], ['Observer  :', id.observer]]
+      .forEach(([l, v], i) => { const r = row([i + 1, l, v || '']); merges.push({ s: { r, c: 2 }, e: { r, c: 6 } }); });
+    row(['NO.', 'ASPEK YANG DIAMATI', 'KATEGORI', 'SKOR', 'BUKTI PEMBELAJARAN\n(isi 1 bila teramati, 0 bila tidak)', '', 'CATATAN']);
+    merges.push({ s: { r: g.length - 1, c: 4 }, e: { r: g.length - 1, c: 5 } });
+    const aspRows = [];
+    INSTR.forEach((a, i) => {
+      if (a.g) row(['', a.g]);
+      const r0 = g.length;
+      a.ev.forEach((t, k) => row(k === 0 ? [i + 1, a.text, '', '', flag, t] : ['', '', '', '', flag, t]));
+      [0, 1, 2, 6].forEach((c) => merges.push({ s: { r: r0, c }, e: { r: r0 + 3, c } }));
+      formulas.push({ r: r0, c: 3, f: 'SUM(E' + (r0 + 1) + ':E' + (r0 + 4) + ')', v: flag * 4, t: 'n' });
+      formulas.push({ r: r0, c: 2, f: 'IF(D' + (r0 + 1) + '=4,"Sangat Baik",IF(D' + (r0 + 1) + '=3,"Baik",IF(D' + (r0 + 1) + '=2,"Cukup","Perlu Pembinaan")))', v: flag ? 'Sangat Baik' : 'Perlu Pembinaan', t: 's' });
+      aspRows.push(r0 + 1);
+    });
+    const sr = row(['SKOR PENILAIAN']);
+    row(['', 'Skor maksimal', '', INSTR.length * 4]);
+    const tr = row(['', 'Skor perolehan', '', '']);
+    formulas.push({ r: tr, c: 3, f: aspRows.map((x) => 'D' + x).join('+'), v: flag * INSTR.length * 4, t: 'n' });
+    row(['', 'Nilai (0-100)', '', '']);
+    formulas.push({ r: g.length - 1, c: 3, f: 'ROUND(D' + (tr + 1) + '/D' + (tr) + '*100,1)', v: flag * 100, t: 'n' });
+    row([]);
+    row(['Refleksi']);
+    row(['Pelajaran apa yang telah diperoleh dari Implementasi Perencanaan Pembelajaran yang telah dilakukan beserta faktor-faktor pendukungnya?']);
+    row([(opt.reflA || []).map((x, i) => (i + 1) + '. ' + x).join('\n')]);
+    row(['Hal-hal apa saja yang pencapaiannya belum memuaskan dari Implementasi Perencanaan Pembelajaran yang telah dilakukan beserta faktor-faktor penghambatnya?']);
+    row(['']);
+    row(['Rencana tindak lanjut apa yang akan dibuat untuk perbaikan ke depan?']);
+    row(['']);
+    row([]);
+    row(['', '', '', '', 'Parepare, …….']);
+    row(['', '', '', '', 'Observer']);
+    row([]); row([]);
+    row(['', '', '', '', 'NIP.']);
+    return { grid: g, merges, formulas };
+  }
+  function sampleGrid() {
+    return makeGrid({ flag: 1, identity: { tanggal: 'Senin, 22 Juni 2026' }, reflA: SAMPLE_REFL_A }).grid;
+  }
+
+  return { parseText, extractReport, analyse, autoRefl, linesToItems, buildBlocks, renderHTML, buildDocx, makeGrid, sampleGrid, catByScore, catByPct, fmtNum, esc, S };
+})();
+if (typeof module !== 'undefined') module.exports = Core;
+
+</script>
+<script>
+(function(){
+'use strict';
+const $ = (s)=>document.querySelector(s);
+const state = { reports: [], active: -1 };
+let uid = 0, dl = null, dlTried = false, pvTimer = null;
+
+function toast(t, ms){ const el=$('#toast'); el.textContent=t; el.classList.add('show'); clearTimeout(toast._t); toast._t=setTimeout(()=>el.classList.remove('show'), ms||2800); }
+function msg(kind, text){ const d=document.createElement('div'); d.className='msg '+kind; d.textContent=text; $('#msgs').appendChild(d); }
+function clearMsgs(){ $('#msgs').innerHTML=''; }
+const slug = (s)=> (s||'laporan').toString().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z0-9]+/g,'_').replace(/^_+|_+$/g,'').slice(0,50) || 'laporan';
+
+/* --- downloads capability --- */
+async function getDL(){
+  if (dlTried) return dl; dlTried = true;
+  try { dl = (window.claude && window.claude.use) ? await window.claude.use('downloads') : null; } catch(e){ dl = null; }
+  return dl;
+}
+getDL();
+function browserSave(filename, data){
+  const ext = (filename.split('.').pop()||'').toLowerCase();
+  const mime = { docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document', xlsx:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }[ext] || 'application/octet-stream';
+  const blob = (data instanceof Blob) ? data : new Blob([data], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 4000);
+}
+async function saveFile(filename, data){
+  const d = await getDL();
+  try {
+    if (d){ await d.save({ filename, data }); }
+    else { browserSave(filename, data); }
+    toast('Berkas disimpan: ' + filename); return true;
+  } catch(e){
+    if (e && e.code === 'declined') toast('Unduhan dibatalkan.');
+    else toast('Gagal menyimpan: ' + ((e && e.message) || 'kesalahan tidak diketahui'));
+    return false;
+  }
+}
+
+/* --- library check --- */
+function libsOK(){ return typeof XLSX !== 'undefined' && typeof docx !== 'undefined'; }
+if (!libsOK()) setTimeout(()=>{ if(!libsOK()) msg('err','Sebagian pustaka gagal dimuat (XLSX/DOCX). Muat ulang halaman; jika berlanjut, periksa koneksi internet.'); }, 1500);
+
+/* --- membuat laporan --- */
+function newReport(name, data){
+  const an = Core.analyse(data.aspects), auto = Core.autoRefl(data.aspects, an), id = data.identity;
+  const has = { a: data.refl.a.length>0, b: data.refl.b.length>0, c: data.refl.c.length>0 };
+  return { id: ++uid, name, data, warnings: data.warnings, autoFlags: { a:!has.a, b:!has.b, c:!has.c },
+    edit: { sekolah:id.sekolah, guru:id.guru, nip:id.nip, mapel:id.mapel, kelas:id.kelas, tanggal:id.tanggal, observer:id.observer,
+      observerNip:data.observerNip||'', kota:data.city||'', tglLaporan:data.tglLaporan||'', kepsekOn:false, kepsek:'', kepsekNip:'',
+      refA:(has.a?data.refl.a:auto.a).join('\n'), refB:(has.b?data.refl.b:auto.b).join('\n'), refC:(has.c?data.refl.c:auto.c).join('\n') } };
+}
+function addFromGrid(label, grid){
+  const res = Core.extractReport(grid);
+  if (!res.ok) return res;
+  const rep = newReport(res.identity.guru || label, res); rep.source = label;
+  state.reports.push(rep); state.active = state.reports.length - 1;
+  return res;
+}
+
+async function handleFiles(files){
+  clearMsgs(); let added = 0;
+  for (const f of files){
+    const ext = (f.name.split('.').pop()||'').toLowerCase();
+    try {
+      if (['csv','tsv','txt'].includes(ext)){
+        const res = addFromGrid(f.name, Core.parseText(await f.text()));
+        if (res.ok) added++; else msg('err', f.name + ': ' + res.error);
+      } else {
+        if (typeof XLSX === 'undefined'){ msg('err','Pustaka pembaca Excel belum termuat. Muat ulang halaman.'); continue; }
+        const wb = XLSX.read(await f.arrayBuffer(), { type:'array' });
+        let ok = 0, lastErr = '';
+        wb.SheetNames.forEach((sn)=>{
+          const grid = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header:1, raw:true, defval:'' });
+          const res = addFromGrid(f.name + (wb.SheetNames.length>1 ? ' · ' + sn : ''), grid);
+          if (res.ok) ok++; else lastErr = res.error;
+        });
+        added += ok;
+        if (!ok) msg('err', f.name + ': format tidak dikenali. ' + lastErr + ' Pakai template Excel agar susunannya sesuai.');
+      }
+    } catch(e){ msg('err', f.name + ': gagal dibaca (' + (e.message||e) + ').'); }
+  }
+  if (added){ msg('ok', added + ' laporan berhasil dibuat.'); showWork(); }
+}
+
+/* --- render --- */
+function showWork(){ $('#work').style.display='block'; renderAll(); setTimeout(()=>$('#work').scrollIntoView({behavior:'smooth',block:'start'}),50); }
+const cur = ()=> state.reports[state.active];
+function chipCls(cat){ return cat==='Sangat Baik'||cat==='Baik' ? '' : cat==='Cukup' ? 'mid' : 'low'; }
+function renderAll(){ renderList(); renderForm(); renderPreview(); }
+
+function renderList(){
+  const rs = state.reports;
+  $('#cnt').textContent = rs.length > 1 ? '(' + rs.length + ')' : '';
+  $('#rlist').innerHTML = rs.map((r,i)=>{
+    const an = Core.analyse(r.data.aspects);
+    return '<div class="ritem'+(i===state.active?' act':'')+'" data-i="'+i+'"><div class="nm"><b>'+Core.esc(r.edit.guru || r.name)+'</b><span>'+Core.esc(r.source||'')+'</span></div><span class="chip '+chipCls(an.cat)+'">'+Core.fmtNum(an.nilai)+' · '+an.cat+'</span><button class="x" data-del="'+i+'" title="Hapus" aria-label="Hapus">×</button></div>';
+  }).join('');
+  if (rs.length > 1){
+    let h = '<div class="btnrow"><button id="btnRecap">Unduh rekap semua (.xlsx)</button></div><table class="recap"><tr><th>Guru</th><th class="n">Nilai</th></tr>';
+    rs.forEach((r)=>{ const an=Core.analyse(r.data.aspects); h += '<tr><td>'+Core.esc(r.edit.guru||r.name)+'</td><td class="n">'+Core.fmtNum(an.nilai)+' ('+an.cat+')</td></tr>'; });
+    $('#recapBox').innerHTML = h + '</table>';
+  } else $('#recapBox').innerHTML = '';
+}
+
+const F1 = [['sekolah','Nama sekolah'],['guru','Nama guru'],['nip','NIP guru'],['mapel','Mata pelajaran'],['kelas','Kelas/Semester'],['tanggal','Hari/Tanggal pelaksanaan'],['observer','Nama observer']];
+function fld(r,k,label){ const v=r.edit[k]||''; return '<label class="f" for="f_'+k+'">'+label+'</label><input type="text" id="f_'+k+'" data-k="'+k+'" value="'+Core.esc(v)+'"'+(v?'':' class="need"')+'>'; }
+function renderForm(){
+  const r = cur(); if (!r){ $('#formCard').innerHTML=''; return; }
+  let h = '<h2>2. Periksa dan lengkapi</h2>';
+  if (r.warnings && r.warnings.length) h += '<div class="msg warn">'+r.warnings.map(Core.esc).join('<br>')+'</div>';
+  h += '<h3 class="sec">Identitas</h3>' + F1.map(([k,l])=>fld(r,k,l)).join('');
+  h += '<h3 class="sec">Penandatanganan</h3>' + fld(r,'observerNip','NIP observer') + '<div class="two"><div>'+fld(r,'kota','Kota')+'</div><div>'+fld(r,'tglLaporan','Tanggal laporan')+'</div></div>';
+  h += '<label class="chk"><input type="checkbox" data-k="kepsekOn" id="f_kepsekOn"'+(r.edit.kepsekOn?' checked':'')+'> Tambahkan tanda tangan Kepala Sekolah</label>';
+  h += '<div id="kepsekBox"'+(r.edit.kepsekOn?'':' hidden')+'>'+fld(r,'kepsek','Nama kepala sekolah')+fld(r,'kepsekNip','NIP kepala sekolah')+'</div>';
+  h += '<h3 class="sec">Refleksi (satu butir per baris)</h3>';
+  [['refA','A. Pelajaran yang diperoleh dan faktor pendukung','a'],['refB','B. Hal yang belum memuaskan dan faktor penghambat','b'],['refC','C. Rencana tindak lanjut','c']].forEach(([k,l,f])=>{
+    h += '<label class="f" for="f_'+k+'">'+l+'</label><textarea id="f_'+k+'" data-k="'+k+'" rows="'+(k==='refB'?3:5)+'">'+Core.esc(r.edit[k])+'</textarea>' + (r.autoFlags[f] ? '<div class="auto" id="auto_'+f+'">Disusun otomatis dari data instrumen. Periksa dan ubah bila perlu.</div>' : '');
+  });
+  $('#formCard').innerHTML = h;
+}
+
+function renderKPI(){
+  const r = cur(); if (!r){ $('#kpi').innerHTML=''; return; }
+  const an = Core.analyse(r.data.aspects);
+  $('#kpi').innerHTML = '<b>'+Core.fmtNum(an.nilai)+'</b><span class="chip '+chipCls(an.cat)+'">'+an.cat+'</span><span style="color:var(--muted)">Skor '+an.got+' / '+an.max+'</span>';
+}
+function renderPreview(){
+  const r = cur(); if (!r) return;
+  renderKPI();
+  $('#paper').innerHTML = Core.renderHTML(Core.buildBlocks(r));
+}
+function schedulePreview(){ clearTimeout(pvTimer); pvTimer = setTimeout(()=>{ renderPreview(); renderList(); }, 150); }
+
+/* --- events --- */
+$('#file').addEventListener('change', (e)=>{ const fs=[...e.target.files]; e.target.value=''; if(fs.length) handleFiles(fs); });
+const drop = $('#drop');
+['dragenter','dragover'].forEach((ev)=>drop.addEventListener(ev,(e)=>{ e.preventDefault(); drop.classList.add('over'); }));
+['dragleave','drop'].forEach((ev)=>drop.addEventListener(ev,(e)=>{ e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop',(e)=>{ const fs=[...(e.dataTransfer.files||[])]; if(fs.length) handleFiles(fs); });
+
+$('#btnPaste').addEventListener('click',()=>{ const b=$('#pasteBox'); b.hidden=!b.hidden; if(!b.hidden) $('#pasteTa').focus(); });
+$('#btnPasteGo').addEventListener('click',()=>{
+  clearMsgs(); const t=$('#pasteTa').value; if(!t.trim()){ msg('warn','Tempel dulu data instrumennya.'); return; }
+  const res = addFromGrid('Data tempel', Core.parseText(t));
+  if (res.ok){ $('#pasteTa').value=''; $('#pasteBox').hidden=true; msg('ok','Laporan berhasil dibuat.'); showWork(); }
+  else msg('err','Data tidak dikenali. ' + res.error + ' Pastikan baris judul tabel (NO., ASPEK YANG DIAMATI, ...) ikut tersalin.');
+});
+$('#btnSample').addEventListener('click',()=>{ clearMsgs(); const res=addFromGrid('Contoh (data pada instrumen)', Core.sampleGrid()); if(res.ok){ msg('ok','Contoh dimuat. Lengkapi kolom kuning untuk melihat hasil akhir.'); showWork(); } });
+
+function workbookFromGrid(t, sheetName){
+  const ws = XLSX.utils.aoa_to_sheet(t.grid);
+  ws['!merges'] = t.merges;
+  ws['!cols'] = [{wch:6},{wch:62},{wch:18},{wch:8},{wch:10},{wch:64},{wch:30}];
+  (t.formulas||[]).forEach((f)=>{ ws[XLSX.utils.encode_cell({r:f.r,c:f.c})] = { t:f.t, f:f.f, v:f.v }; });
+  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, sheetName); return wb;
+}
+$('#btnTemplate').addEventListener('click', async ()=>{
+  if (typeof XLSX === 'undefined'){ toast('Pustaka Excel belum termuat.'); return; }
+  const wb = workbookFromGrid(Core.makeGrid({ flag: 0 }), 'Instrumen');
+  await saveFile('Template_Instrumen_Supervisi_Pembelajaran_Mendalam.xlsx', XLSX.write(wb, { type:'array', bookType:'xlsx' }));
+});
+
+document.addEventListener('click', async (e)=>{
+  const del = e.target.closest('[data-del]');
+  if (del){ e.stopPropagation(); const i=+del.dataset.del; state.reports.splice(i,1); if(!state.reports.length){ state.active=-1; $('#work').style.display='none'; } else { state.active=Math.min(state.active, state.reports.length-1); if(i<state.active) state.active--; renderAll(); } return; }
+  const it = e.target.closest('.ritem'); if (it){ state.active=+it.dataset.i; renderAll(); return; }
+  if (e.target.id === 'btnRecap') await downloadRecap();
+});
+document.addEventListener('input', (e)=>{
+  const el = e.target; const k = el.dataset && el.dataset.k; const r = cur(); if(!k || !r) return;
+  if (el.type === 'checkbox'){ r.edit[k] = el.checked; if(k==='kepsekOn') $('#kepsekBox').hidden = !el.checked; }
+  else { r.edit[k] = el.value; if (el.tagName==='INPUT') el.classList.toggle('need', !el.value.trim()); }
+  const f = {refA:'a',refB:'b',refC:'c'}[k]; if (f && r.autoFlags[f]){ r.autoFlags[f]=false; const a=$('#auto_'+f); if(a) a.remove(); }
+  schedulePreview();
+});
+
+async function downloadDocx(){
+  const r = cur(); if(!r) return;
+  if (typeof docx === 'undefined'){ toast('Pustaka Word belum termuat. Muat ulang halaman.'); return; }
+  const btn = $('#btnDocx'); btn.disabled = true;
+  try {
+    const doc = Core.buildDocx(docx, Core.buildBlocks(r), 'Laporan Supervisi ' + (r.edit.guru||''));
+    const blob = await docx.Packer.toBlob(doc);
+    await saveFile('Laporan_Supervisi_' + slug(r.edit.guru || r.name) + '.docx', blob);
+  } catch(e){ toast('Gagal membuat berkas: ' + (e.message||e)); }
+  btn.disabled = false;
+}
+$('#btnDocx').addEventListener('click', downloadDocx);
+
+async function downloadRecap(){
+  if (typeof XLSX === 'undefined'){ toast('Pustaka Excel belum termuat.'); return; }
+  const rs = state.reports, names = [];
+  rs.forEach((r)=>Core.analyse(r.data.aspects).comps.forEach((c)=>{ if(!names.includes(c.name)) names.push(c.name); }));
+  const rows = [['No','Nama Guru','NIP','Mata Pelajaran','Kelas/Semester','Hari/Tanggal','Observer', ...names.map((n)=>n+' (%)'), 'Skor','Skor Maks','Nilai','Kategori']];
+  rs.forEach((r,i)=>{
+    const an = Core.analyse(r.data.aspects), e = r.edit;
+    rows.push([i+1, e.guru, e.nip, e.mapel, e.kelas, e.tanggal, e.observer, ...names.map((n)=>{ const c=an.comps.find((x)=>x.name===n); return c ? Math.round(c.pct*10)/10 : ''; }), an.got, an.max, an.nilai, an.cat]);
+  });
+  const ws = XLSX.utils.aoa_to_sheet(rows); ws['!cols'] = rows[0].map((h,i)=>({wch: i===1?28:i<7?18:14}));
+  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Rekap');
+  await saveFile('Rekap_Supervisi_Pembelajaran_Mendalam.xlsx', XLSX.write(wb, { type:'array', bookType:'xlsx' }));
+}
+})();
+</script>
+</body>
+</html>
