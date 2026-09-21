@@ -90,6 +90,17 @@ label.f{display:block;font-size:.85rem;color:var(--muted);margin:8px 0 3px}
 .paper .r-sig.single{margin-top:22px}
 .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:.9rem;z-index:50;opacity:0;pointer-events:none;transition:.2s;max-width:90vw}
 .toast.show{opacity:1}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:16px;z-index:60}
+.modal.open{display:flex}
+.dlg{background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:14px;padding:20px;width:min(560px,100%);max-height:92vh;overflow:auto}
+.dlg h2{font-size:1.15rem;margin:0 0 4px}
+.dlg .sub{color:var(--muted);font-size:.88rem;margin:0 0 12px}
+.cfg{width:100%;border-collapse:collapse;margin:6px 0 4px}
+.cfg th{font-size:.78rem;text-align:left;color:var(--muted);font-weight:600;padding:4px 6px}
+.cfg td{padding:5px 6px;vertical-align:middle}
+.cfg input{padding:6px 8px}
+.cfg .rng{font-size:.85rem;color:var(--muted);white-space:nowrap}
+.cfg .fix{font-size:.9rem;padding:6px 8px;color:var(--muted)}
 .recap{width:100%;border-collapse:collapse;font-size:.85rem;margin-top:6px}
 .recap th,.recap td{border-bottom:1px solid var(--border);padding:5px 4px;text-align:left}
 .recap td.n,.recap th.n{text-align:right}
@@ -114,6 +125,7 @@ label.f{display:block;font-size:.85rem;color:var(--muted);margin:8px 0 3px}
         <button id="btnPaste">Tempel data dari Excel/Sheets</button>
         <button id="btnSample">Coba dengan contoh</button>
         <button id="btnTemplate">Unduh template Excel</button>
+        <button id="btnCfg">⚙ Atur kategori nilai</button>
       </div>
       <div id="pasteBox" hidden style="margin-top:10px">
         <textarea id="pasteTa" rows="6" placeholder="Salin seluruh tabel instrumen dari Excel/Google Sheets, lalu tempel di sini"></textarea>
@@ -129,7 +141,7 @@ label.f{display:block;font-size:.85rem;color:var(--muted);margin:8px 0 3px}
         <li><b>Unggah</b> berkas hasilnya. Identitas, skor, bukti, dan refleksi dibaca otomatis.</li>
         <li><b>Periksa</b> pratinjau, lengkapi kolom yang kosong (kuning), lalu <b>unduh Word</b>.</li>
       </ol>
-      <p class="note">Nilai akhir = skor perolehan ÷ skor maksimal × 100. Kategori: 86–100 Sangat Baik, 71–85 Baik, 56–70 Cukup, di bawah 56 Perlu Pembinaan.</p>
+      <p class="note">Nilai akhir = skor perolehan ÷ skor maksimal × 100. <span id="catNote"></span> <button class="link" id="btnCfg3">Ubah</button></p>
     </div>
   </section>
 
@@ -146,13 +158,33 @@ label.f{display:block;font-size:.85rem;color:var(--muted);margin:8px 0 3px}
       <div>
         <div class="toolbar">
           <div class="kpi" id="kpi"></div>
-          <div class="btnrow" style="margin:0"><button class="primary" id="btnDocx">Unduh Word (.docx)</button></div>
+          <div class="btnrow" style="margin:0"><button id="btnCfg2">⚙ Atur kategori nilai</button><button class="primary" id="btnDocx">Unduh Word (.docx)</button></div>
         </div>
+        
         <div class="pv"><div class="paper" id="paper"></div></div>
       </div>
     </div>
   </section>
 </main>
+<div class="modal" id="cfgModal" role="dialog" aria-modal="true" aria-labelledby="cfgTitle">
+  <div class="dlg">
+    <h2 id="cfgTitle">Pengaturan kategori nilai</h2>
+    <p class="sub">Tentukan batas minimum nilai akhir (0–100) untuk tiap kategori. Nama kategori juga bisa disesuaikan. Pengaturan berlaku untuk semua laporan dan tersimpan di browser ini.</p>
+    <table class="cfg">
+      <tr><th>Kategori</th><th>Nilai minimum</th><th>Rentang</th></tr>
+      <tr><td><input type="text" id="cn3" aria-label="Nama kategori tertinggi"></td><td><input type="text" inputmode="decimal" id="cv3" aria-label="Batas nilai kategori tertinggi" style="width:90px"></td><td class="rng" id="cr3"></td></tr>
+      <tr><td><input type="text" id="cn2" aria-label="Nama kategori kedua"></td><td><input type="text" inputmode="decimal" id="cv2" aria-label="Batas nilai kategori kedua" style="width:90px"></td><td class="rng" id="cr2"></td></tr>
+      <tr><td><input type="text" id="cn1" aria-label="Nama kategori ketiga"></td><td><input type="text" inputmode="decimal" id="cv1" aria-label="Batas nilai kategori ketiga" style="width:90px"></td><td class="rng" id="cr1"></td></tr>
+      <tr><td><input type="text" id="cn0" aria-label="Nama kategori terendah"></td><td class="fix">di bawah batas di atas</td><td class="rng" id="cr0"></td></tr>
+    </table>
+    <div id="cfgErr" class="msg err" hidden></div>
+    <p class="note">Kategori skor per aspek (4, 3, 2, 1) mengikuti nama yang sama. Nilai desimal boleh ditulis dengan titik atau koma.</p>
+    <div class="btnrow" style="justify-content:space-between">
+      <button id="cfgReset">Kembalikan standar</button>
+      <span style="display:flex;gap:8px"><button id="cfgCancel">Batal</button><button class="primary" id="cfgSave">Simpan</button></span>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast" role="status"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
@@ -206,8 +238,21 @@ const Core = (function () {
   const DOTS = '……………………………';
   const orDots = (v, d) => (S(v) ? S(v) : d || DOTS);
   const joinList = (a) => (a.length <= 1 ? a.join('') : a.slice(0, -1).join(', ') + ' dan ' + a[a.length - 1]);
-  const catByScore = (s) => (s >= 4 ? 'Sangat Baik' : s >= 3 ? 'Baik' : s >= 2 ? 'Cukup' : 'Perlu Pembinaan');
-  const catByPct = (p) => (p >= 86 ? 'Sangat Baik' : p >= 71 ? 'Baik' : p >= 56 ? 'Cukup' : 'Perlu Pembinaan');
+  const DEFAULT_CFG = { sb: 86, b: 71, c: 56, names: ['Perlu Pembinaan', 'Cukup', 'Baik', 'Sangat Baik'] };
+  let CFG = { sb: 86, b: 71, c: 56, names: DEFAULT_CFG.names.slice() };
+  function validateCfg(c) {
+    const nums = [c.sb, c.b, c.c];
+    if (nums.some((x) => typeof x !== 'number' || !isFinite(x))) return 'Batas nilai harus berupa angka.';
+    if (nums.some((x) => x < 1 || x > 100)) return 'Batas nilai harus antara 1 dan 100.';
+    if (!(c.sb > c.b && c.b > c.c)) return 'Urutan batas harus menurun: batas Sangat Baik > batas Baik > batas Cukup.';
+    if (!c.names || c.names.length !== 4 || c.names.some((n) => !S(n))) return 'Nama kategori tidak boleh kosong.';
+    return '';
+  }
+  function setConfig(c) { const err = validateCfg(c); if (err) return err; CFG = { sb: c.sb, b: c.b, c: c.c, names: c.names.map((n) => S(n)) }; return ''; }
+  const getConfig = () => ({ sb: CFG.sb, b: CFG.b, c: CFG.c, names: CFG.names.slice() });
+  const catRank = (p) => (p >= CFG.sb ? 3 : p >= CFG.b ? 2 : p >= CFG.c ? 1 : 0);
+  const catByScore = (s) => CFG.names[s >= 4 ? 3 : s >= 3 ? 2 : s >= 2 ? 1 : 0];
+  const catByPct = (p) => CFG.names[catRank(p)];
   const titleCase = (s) => s.toLowerCase().replace(/(^|\s)([a-z])/g, (m, a, b) => a + b.toUpperCase()).replace(/\b(Dan|Yang|Di|Ke|Dari)\b/g, (m) => m.toLowerCase());
 
   function parseDelimited(text, delim) {
@@ -350,11 +395,11 @@ const Core = (function () {
     const comps = order.map((g, i) => {
       const as = aspects.filter((a) => a.group === g);
       const max = as.length * 4, got = as.reduce((s, a) => s + a.skor, 0), pct = max ? (got / max) * 100 : 0;
-      return { letter: String.fromCharCode(65 + i), key: g, name: titleCase(g), aspects: as, max, got, pct, cat: catByPct(pct) };
+      return { letter: String.fromCharCode(65 + i), key: g, name: titleCase(g), aspects: as, max, got, pct, cat: catByPct(pct), rank: catRank(pct) };
     });
     const max = aspects.length * 4, got = aspects.reduce((s, a) => s + a.skor, 0);
     const nilai = max ? Math.round((got / max) * 1000) / 10 : 0;
-    return { comps, max, got, nilai, cat: catByPct(nilai), n: aspects.length, perfect: aspects.every((a) => a.skor >= 4) };
+    return { comps, max, got, nilai, cat: catByPct(nilai), rank: catRank(nilai), n: aspects.length, perfect: aspects.every((a) => a.skor >= 4) };
   }
   const unobs = (a) => a.ev.filter((e) => !e.ok).map((e) => e.text.replace(/[.]+$/, ''));
 
@@ -406,7 +451,7 @@ const Core = (function () {
     B.push({ t: 'p', text: 'Supervisi ini bertujuan untuk:', after: 60 });
     B.push({ t: 'ol', items: ['memperoleh gambaran tentang keselarasan antara perencanaan pembelajaran dengan pelaksanaannya di kelas;', 'mengetahui implementasi kerangka pembelajaran mendalam yang meliputi praktik pedagogis, lingkungan belajar, kemitraan pembelajaran, dan pemanfaatan digital;', 'menilai langkah pembelajaran yang memfasilitasi pengalaman belajar memuliakan, memahami, mengaplikasi, dan merefleksi, serta pelaksanaan asesmen; dan', 'merumuskan refleksi dan rencana tindak lanjut untuk peningkatan kualitas pembelajaran.'] });
     B.push({ t: 'sub', text: 'C. Instrumen dan Metode' });
-    B.push({ t: 'p', text: 'Supervisi dilaksanakan melalui observasi langsung pembelajaran di kelas menggunakan Instrumen Supervisi Pembelajaran Mendalam yang memuat ' + an.n + ' aspek pengamatan beserta indikator bukti pembelajarannya. Setiap aspek dinilai dengan skala 1 sampai 4 (Perlu Pembinaan, Cukup, Baik, dan Sangat Baik) berdasarkan bukti pembelajaran yang teramati.' });
+    B.push({ t: 'p', text: 'Supervisi dilaksanakan melalui observasi langsung pembelajaran di kelas menggunakan Instrumen Supervisi Pembelajaran Mendalam yang memuat ' + an.n + ' aspek pengamatan beserta indikator bukti pembelajarannya. Setiap aspek dinilai dengan skala 1 sampai 4 (' + CFG.names[0] + ', ' + CFG.names[1] + ', ' + CFG.names[2] + ', dan ' + CFG.names[3] + ') berdasarkan bukti pembelajaran yang teramati.' });
 
     B.push({ t: 'h', text: 'II. IDENTITAS PELAKSANAAN SUPERVISI' });
     B.push({ t: 'kv', rows: [['Nama Sekolah', orDots(e.sekolah)], ['Nama Guru', orDots(e.guru)], ['NIP', orDots(e.nip)], ['Mata Pelajaran', orDots(e.mapel)], ['Kelas/Semester', orDots(e.kelas)], ['Hari/Tanggal', tgl], ['Observer', orDots(e.observer)]] });
@@ -431,12 +476,13 @@ const Core = (function () {
     B.push({ t: 'gap' });
     B.push({ t: 'sub', text: 'C. Nilai Akhir dan Kategori' });
     B.push({ t: 'p', runs: [{ text: 'Nilai = (Skor Perolehan ÷ Skor Maksimal) × 100 = (' + an.got + ' ÷ ' + an.max + ') × 100 = ' }, { text: fmtNum(an.nilai), bold: true }, { text: '. Berdasarkan hasil tersebut, pelaksanaan pembelajaran yang disupervisi berada pada kategori ' }, { text: an.cat.toUpperCase(), bold: true }, { text: '.' }] });
-    B.push({ t: 'p', text: 'Keterangan skala penilaian instrumen dan konversi nilai akhir:', after: 60, keep: true });
+    B.push({ t: 'p', text: 'Keterangan skala skor per aspek dan konversi nilai akhir menjadi kategori:', after: 60, keep: true });
+    const fm = (x) => fmtNum(x);
     B.push({ t: 'table', widths: [1200, 2800, 5070], head: ['Skor', 'Kategori', 'Deskripsi'], rows: [
-      { cells: [{ text: '4', align: 'c' }, { text: 'Sangat Baik' }, { text: 'Seluruh indikator bukti pembelajaran teramati (nilai akhir 86–100)' }] },
-      { cells: [{ text: '3', align: 'c' }, { text: 'Baik' }, { text: 'Sebagian besar indikator teramati (nilai akhir 71–85)' }] },
-      { cells: [{ text: '2', align: 'c' }, { text: 'Cukup' }, { text: 'Sebagian indikator teramati (nilai akhir 56–70)' }] },
-      { cells: [{ text: '1', align: 'c' }, { text: 'Perlu Pembinaan' }, { text: 'Sedikit atau belum ada indikator yang teramati (nilai akhir di bawah 56)' }] },
+      { cells: [{ text: '4', align: 'c' }, { text: CFG.names[3] }, { text: 'Seluruh indikator bukti pembelajaran teramati (nilai akhir ' + fm(CFG.sb) + ' ke atas)' }] },
+      { cells: [{ text: '3', align: 'c' }, { text: CFG.names[2] }, { text: 'Sebagian besar indikator teramati (nilai akhir ' + fm(CFG.b) + ' sampai kurang dari ' + fm(CFG.sb) + ')' }] },
+      { cells: [{ text: '2', align: 'c' }, { text: CFG.names[1] }, { text: 'Sebagian indikator teramati (nilai akhir ' + fm(CFG.c) + ' sampai kurang dari ' + fm(CFG.b) + ')' }] },
+      { cells: [{ text: '1', align: 'c' }, { text: CFG.names[0] }, { text: 'Sedikit atau belum ada indikator yang teramati (nilai akhir kurang dari ' + fm(CFG.c) + ')' }] },
     ] });
 
     B.push({ t: 'h', text: 'IV. BUKTI PEMBELAJARAN YANG TERAMATI' });
@@ -483,8 +529,8 @@ const Core = (function () {
     B.push({ t: 'p', text: kes });
     B.push({ t: 'sub', text: 'B. Rekomendasi' });
     let rek;
-    if (an.perfect || an.nilai >= 86) rek = 'Guru disarankan mempertahankan dan mengembangkan praktik pembelajaran yang telah baik, serta berbagi praktik tersebut dengan rekan sejawat.' + (an.perfect ? '' : ' Aspek yang belum mencapai skor maksimal perlu ditindaklanjuti sesuai rencana tindak lanjut.') + ' Sekolah disarankan memfasilitasi keberlanjutan pembinaan dan pertukaran praktik baik agar dampaknya dirasakan lebih luas.';
-    else if (an.nilai >= 71) rek = 'Guru disarankan mempertahankan praktik yang telah baik dan memprioritaskan perbaikan pada aspek yang belum mencapai skor maksimal sesuai rencana tindak lanjut. Sekolah disarankan menyediakan pendampingan dan supervisi lanjutan untuk memastikan perbaikan berjalan.';
+    if (an.perfect || an.rank >= 3) rek = 'Guru disarankan mempertahankan dan mengembangkan praktik pembelajaran yang telah baik, serta berbagi praktik tersebut dengan rekan sejawat.' + (an.perfect ? '' : ' Aspek yang belum mencapai skor maksimal perlu ditindaklanjuti sesuai rencana tindak lanjut.') + ' Sekolah disarankan memfasilitasi keberlanjutan pembinaan dan pertukaran praktik baik agar dampaknya dirasakan lebih luas.';
+    else if (an.rank === 2) rek = 'Guru disarankan mempertahankan praktik yang telah baik dan memprioritaskan perbaikan pada aspek yang belum mencapai skor maksimal sesuai rencana tindak lanjut. Sekolah disarankan menyediakan pendampingan dan supervisi lanjutan untuk memastikan perbaikan berjalan.';
     else rek = 'Guru disarankan mengikuti pembinaan dan pendampingan berkelanjutan, terutama pada aspek yang memperoleh skor rendah, melalui diskusi dengan observer, kegiatan komunitas belajar, dan penyempurnaan perencanaan pembelajaran. Sekolah disarankan menjadwalkan supervisi ulang untuk memantau perkembangan.';
     B.push({ t: 'p', text: rek });
     B.push({ t: 'p', text: 'Demikian laporan hasil supervisi ini disusun untuk dipergunakan sebagaimana mestinya.', after: 240 });
@@ -601,7 +647,8 @@ const Core = (function () {
       a.ev.forEach((t, k) => row(k === 0 ? [i + 1, a.text, '', '', flag, t] : ['', '', '', '', flag, t]));
       [0, 1, 2, 6].forEach((c) => merges.push({ s: { r: r0, c }, e: { r: r0 + 3, c } }));
       formulas.push({ r: r0, c: 3, f: 'SUM(E' + (r0 + 1) + ':E' + (r0 + 4) + ')', v: flag * 4, t: 'n' });
-      formulas.push({ r: r0, c: 2, f: 'IF(D' + (r0 + 1) + '=4,"Sangat Baik",IF(D' + (r0 + 1) + '=3,"Baik",IF(D' + (r0 + 1) + '=2,"Cukup","Perlu Pembinaan")))', v: flag ? 'Sangat Baik' : 'Perlu Pembinaan', t: 's' });
+      const nm = CFG.names.map((x) => x.replace(/"/g, ''));
+      formulas.push({ r: r0, c: 2, f: 'IF(D' + (r0 + 1) + '=4,"' + nm[3] + '",IF(D' + (r0 + 1) + '=3,"' + nm[2] + '",IF(D' + (r0 + 1) + '=2,"' + nm[1] + '","' + nm[0] + '")))', v: flag ? nm[3] : nm[0], t: 's' });
       aspRows.push(r0 + 1);
     });
     const sr = row(['SKOR PENILAIAN']);
@@ -629,7 +676,7 @@ const Core = (function () {
     return makeGrid({ flag: 1, identity: { tanggal: 'Senin, 22 Juni 2026' }, reflA: SAMPLE_REFL_A }).grid;
   }
 
-  return { parseText, extractReport, analyse, autoRefl, linesToItems, buildBlocks, renderHTML, buildDocx, makeGrid, sampleGrid, catByScore, catByPct, fmtNum, esc, S };
+  return { parseText, extractReport, analyse, autoRefl, linesToItems, buildBlocks, renderHTML, buildDocx, makeGrid, sampleGrid, catByScore, catByPct, catRank, setConfig, getConfig, validateCfg, DEFAULT_CFG, fmtNum, esc, S };
 })();
 if (typeof module !== 'undefined') module.exports = Core;
 
@@ -653,26 +700,22 @@ async function getDL(){
   return dl;
 }
 getDL();
+const MIME = { docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document', xlsx:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' };
 function browserSave(filename, data){
-  const ext = (filename.split('.').pop()||'').toLowerCase();
-  const mime = { docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document', xlsx:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }[ext] || 'application/octet-stream';
-  const blob = (data instanceof Blob) ? data : new Blob([data], { type: mime });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url), 4000);
+  const ext = filename.split('.').pop().toLowerCase();
+  const blob = data instanceof Blob ? data : new Blob([data], { type: MIME[ext] || 'application/octet-stream' });
+  const url = URL.createObjectURL(blob), a = document.createElement('a');
+  a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 5000);
 }
 async function saveFile(filename, data){
   const d = await getDL();
-  try {
-    if (d){ await d.save({ filename, data }); }
-    else { browserSave(filename, data); }
-    toast('Berkas disimpan: ' + filename); return true;
-  } catch(e){
-    if (e && e.code === 'declined') toast('Unduhan dibatalkan.');
-    else toast('Gagal menyimpan: ' + ((e && e.message) || 'kesalahan tidak diketahui'));
-    return false;
+  if (d){
+    try { await d.save({ filename, data }); toast('Berkas disimpan: ' + filename); return true; }
+    catch(e){ if (e && e.code === 'declined') toast('Unduhan dibatalkan.'); else toast('Gagal menyimpan: ' + ((e && e.message) || 'kesalahan tidak diketahui')); return false; }
   }
+  try { browserSave(filename, data); toast('Mengunduh: ' + filename); return true; }
+  catch(e){ toast('Gagal mengunduh: ' + ((e && e.message) || e)); return false; }
 }
 
 /* --- library check --- */
@@ -724,7 +767,7 @@ async function handleFiles(files){
 /* --- render --- */
 function showWork(){ $('#work').style.display='block'; renderAll(); setTimeout(()=>$('#work').scrollIntoView({behavior:'smooth',block:'start'}),50); }
 const cur = ()=> state.reports[state.active];
-function chipCls(cat){ return cat==='Sangat Baik'||cat==='Baik' ? '' : cat==='Cukup' ? 'mid' : 'low'; }
+function chipCls(rank){ return rank>=2 ? '' : rank===1 ? 'mid' : 'low'; }
 function renderAll(){ renderList(); renderForm(); renderPreview(); }
 
 function renderList(){
@@ -732,11 +775,11 @@ function renderList(){
   $('#cnt').textContent = rs.length > 1 ? '(' + rs.length + ')' : '';
   $('#rlist').innerHTML = rs.map((r,i)=>{
     const an = Core.analyse(r.data.aspects);
-    return '<div class="ritem'+(i===state.active?' act':'')+'" data-i="'+i+'"><div class="nm"><b>'+Core.esc(r.edit.guru || r.name)+'</b><span>'+Core.esc(r.source||'')+'</span></div><span class="chip '+chipCls(an.cat)+'">'+Core.fmtNum(an.nilai)+' · '+an.cat+'</span><button class="x" data-del="'+i+'" title="Hapus" aria-label="Hapus">×</button></div>';
+    return '<div class="ritem'+(i===state.active?' act':'')+'" data-i="'+i+'"><div class="nm"><b>'+Core.esc(r.edit.guru || r.name)+'</b><span>'+Core.esc(r.source||'')+'</span></div><span class="chip '+chipCls(an.rank)+'">'+Core.fmtNum(an.nilai)+' · '+Core.esc(an.cat)+'</span><button class="x" data-del="'+i+'" title="Hapus" aria-label="Hapus">×</button></div>';
   }).join('');
   if (rs.length > 1){
     let h = '<div class="btnrow"><button id="btnRecap">Unduh rekap semua (.xlsx)</button></div><table class="recap"><tr><th>Guru</th><th class="n">Nilai</th></tr>';
-    rs.forEach((r)=>{ const an=Core.analyse(r.data.aspects); h += '<tr><td>'+Core.esc(r.edit.guru||r.name)+'</td><td class="n">'+Core.fmtNum(an.nilai)+' ('+an.cat+')</td></tr>'; });
+    rs.forEach((r)=>{ const an=Core.analyse(r.data.aspects); h += '<tr><td>'+Core.esc(r.edit.guru||r.name)+'</td><td class="n">'+Core.fmtNum(an.nilai)+' ('+Core.esc(an.cat)+')</td></tr>'; });
     $('#recapBox').innerHTML = h + '</table>';
   } else $('#recapBox').innerHTML = '';
 }
@@ -761,7 +804,7 @@ function renderForm(){
 function renderKPI(){
   const r = cur(); if (!r){ $('#kpi').innerHTML=''; return; }
   const an = Core.analyse(r.data.aspects);
-  $('#kpi').innerHTML = '<b>'+Core.fmtNum(an.nilai)+'</b><span class="chip '+chipCls(an.cat)+'">'+an.cat+'</span><span style="color:var(--muted)">Skor '+an.got+' / '+an.max+'</span>';
+  $('#kpi').innerHTML = '<b>'+Core.fmtNum(an.nilai)+'</b><span class="chip '+chipCls(an.rank)+'">'+Core.esc(an.cat)+'</span><span style="color:var(--muted)">Skor '+an.got+' / '+an.max+'</span>';
 }
 function renderPreview(){
   const r = cur(); if (!r) return;
@@ -812,6 +855,51 @@ document.addEventListener('input', (e)=>{
   const f = {refA:'a',refB:'b',refC:'c'}[k]; if (f && r.autoFlags[f]){ r.autoFlags[f]=false; const a=$('#auto_'+f); if(a) a.remove(); }
   schedulePreview();
 });
+
+/* --- pengaturan kategori --- */
+const CFG_KEY = 'supervisi-kategori-v1';
+function loadCfg(){
+  try { const raw = localStorage.getItem(CFG_KEY); if (raw){ const c = JSON.parse(raw); if (!Core.validateCfg(c)) Core.setConfig(c); } } catch(e){}
+}
+function saveCfg(c){ try { localStorage.setItem(CFG_KEY, JSON.stringify(c)); } catch(e){} }
+function clearCfg(){ try { localStorage.removeItem(CFG_KEY); } catch(e){} }
+const num = (v)=> { const s = String(v).trim().replace(',', '.'); return s === '' ? NaN : Number(s); };
+function fillCfg(c){
+  for (let i=0;i<4;i++) $('#cn'+i).value = c.names[i];
+  $('#cv3').value = String(c.sb).replace('.',','); $('#cv2').value = String(c.b).replace('.',','); $('#cv1').value = String(c.c).replace('.',',');
+  updRanges(); $('#cfgErr').hidden = true;
+}
+function readCfg(){ return { sb: num($('#cv3').value), b: num($('#cv2').value), c: num($('#cv1').value), names: [0,1,2,3].map((i)=>$('#cn'+i).value.trim()) }; }
+function updRanges(){
+  const c = readCfg(), f = (x)=> isFinite(x) ? Core.fmtNum(x) : '?';
+  $('#cr3').textContent = f(c.sb) + ' – 100';
+  $('#cr2').textContent = f(c.b) + ' – < ' + f(c.sb);
+  $('#cr1').textContent = f(c.c) + ' – < ' + f(c.b);
+  $('#cr0').textContent = '0 – < ' + f(c.c);
+}
+function catNote(){
+  const c = Core.getConfig(), f = Core.fmtNum;
+  $('#catNote').textContent = 'Kategori: ' + f(c.sb) + '–100 ' + c.names[3] + ', ' + f(c.b) + ' sampai < ' + f(c.sb) + ' ' + c.names[2] + ', ' + f(c.c) + ' sampai < ' + f(c.b) + ' ' + c.names[1] + ', di bawah ' + f(c.c) + ' ' + c.names[0] + '.';
+}
+function openCfg(){ fillCfg(Core.getConfig()); $('#cfgModal').classList.add('open'); setTimeout(()=>$('#cv3').focus(),30); }
+function closeCfg(){ $('#cfgModal').classList.remove('open'); }
+['#btnCfg','#btnCfg2','#btnCfg3'].forEach((s)=>$(s).addEventListener('click', openCfg));
+$('#cfgCancel').addEventListener('click', closeCfg);
+$('#cfgModal').addEventListener('click', (e)=>{ if (e.target.id === 'cfgModal') closeCfg(); });
+document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape') closeCfg(); });
+$('#cfgModal').addEventListener('input', ()=>{ updRanges(); $('#cfgErr').hidden = true; });
+$('#cfgReset').addEventListener('click', ()=>{ fillCfg(Core.DEFAULT_CFG); });
+$('#cfgSave').addEventListener('click', ()=>{
+  const c = readCfg(), err = Core.validateCfg(c);
+  if (err){ const el = $('#cfgErr'); el.textContent = err; el.hidden = false; return; }
+  Core.setConfig(c);
+  const d = Core.DEFAULT_CFG, isDef = c.sb===d.sb && c.b===d.b && c.c===d.c && c.names.every((n,i)=>n===d.names[i]);
+  if (isDef) clearCfg(); else saveCfg(c);
+  catNote(); closeCfg();
+  if (state.reports.length) renderAll();
+  toast('Pengaturan kategori disimpan.');
+});
+loadCfg(); catNote();
 
 async function downloadDocx(){
   const r = cur(); if(!r) return;
